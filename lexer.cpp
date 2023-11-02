@@ -1013,7 +1013,7 @@ YY_RULE_SETUP
 case 29:
 YY_RULE_SETUP
 #line 69 "lexer.l"
-{ return XOR; }
+{ return DEREFERENCE; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP

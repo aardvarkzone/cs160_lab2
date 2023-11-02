@@ -66,7 +66,7 @@ CHAR_LITERAL     \'[^\']\'
 "+"             { return PLUS; }
 "*"             { return MUL; }
 "&"             { return AMP; }
-"^"             { return XOR; }
+"^"             { return DEREFERENCE; }
 "true"          { return TRUE; }
 "false"         { return FALSE; }
 "{"             { return LBRACE; }

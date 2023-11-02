@@ -19,7 +19,7 @@
 %token BOOLEAN CHAR INTEGER STRING INTPTR CHARPTR 
 %token IF ELSE WHILE VAR PROCEDURE RETURN NULLTOKEN AND 
 %token DIV EQUAL EQUALS GT GTE LT LTE MINUS NOT 
-%token NOTEQUAL OR PLUS MUL AMP XOR TRUE FALSE 
+%token NOTEQUAL OR PLUS MUL AMP DEREFERENCE TRUE FALSE 
 %token INT_LITERAL IDENTIFIER COMMA COLON UMINUS
 %token LBRACE RBRACE SEMICOLON LPAREN RPAREN BAR 
 %token LBRACKET RBRACKET STRING_LITERAL CHAR_LITERAL
@@ -30,9 +30,10 @@
 %left LT LTE GT GTE
 %left PLUS MINUS
 %left MUL DIV
-%left XOR
 %right NOT
+%precedence DEREFERENCE
 %precedence UMINUS
+
 
 %%
 
@@ -142,24 +143,22 @@ AdditiveExpr : AdditiveExpr PLUS MultiplicativeExpr
              | MultiplicativeExpr
              ;
 
-MultiplicativeExpr : MultiplicativeExpr MUL BitwiseExpr
-                   | MultiplicativeExpr DIV BitwiseExpr
-                   | BitwiseExpr
+MultiplicativeExpr : MultiplicativeExpr MUL UnaryExpr
+                   | MultiplicativeExpr DIV UnaryExpr
+                   | UnaryExpr
                    ;
-
-BitwiseExpr : BitwiseExpr XOR UnaryExpr
-            | UnaryExpr
-            ;
 
 UnaryExpr : NOT UnaryExpr
           | MINUS UnaryExpr %prec UMINUS
-          | AMP UnaryExpr
-          | AbsExpr
+          | AMP Variable    
+          | DEREFERENCE PrimaryExpr 
+          | BAR Expression BAR
           | PrimaryExpr
           ;
 
-AbsExpr : BAR Expression BAR
-        ;
+Variable : IDENTIFIER
+         | IDENTIFIER LBRACKET Expression RBRACKET
+         ;
 
 PrimaryExpr : IDENTIFIER
             | INT_LITERAL

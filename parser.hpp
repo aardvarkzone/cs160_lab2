@@ -82,7 +82,7 @@ extern int yydebug;
     PLUS = 283,                    /* PLUS  */
     MUL = 284,                     /* MUL  */
     AMP = 285,                     /* AMP  */
-    XOR = 286,                     /* XOR  */
+    DEREFERENCE = 286,             /* DEREFERENCE  */
     TRUE = 287,                    /* TRUE  */
     FALSE = 288,                   /* FALSE  */
     INT_LITERAL = 289,             /* INT_LITERAL  */
