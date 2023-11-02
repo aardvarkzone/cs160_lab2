@@ -17,7 +17,7 @@
 
 DIGIT       [0-9]
 ALPHA       [a-zA-Z]
-IDENTIFIER  {ALPHA}({ALPHA}|{DIGIT})*
+IDENTIFIER  {ALPHA}({ALPHA}|{DIGIT}|_)*
 DECIMAL     [0-9]{DIGIT}*
 HEX         0[xX][DIGITa-fA-F]+
 OCTAL       0[0-7]+
