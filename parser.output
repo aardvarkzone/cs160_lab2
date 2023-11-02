@@ -1,9 +1,11 @@
-State 28 conflicts: 5 shift/reduce, 2 reduce/reduce
-State 34 conflicts: 7 reduce/reduce
-State 36 conflicts: 2 reduce/reduce
-State 37 conflicts: 1 shift/reduce
-State 128 conflicts: 1 shift/reduce
-State 150 conflicts: 1 shift/reduce
+State 29 conflicts: 5 shift/reduce, 2 reduce/reduce
+State 34 conflicts: 1 reduce/reduce
+State 35 conflicts: 8 reduce/reduce
+State 38 conflicts: 2 reduce/reduce
+State 39 conflicts: 1 shift/reduce
+State 52 conflicts: 7 reduce/reduce
+State 55 conflicts: 5 shift/reduce, 1 reduce/reduce
+State 160 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -17,162 +19,175 @@ Grammar
 
     4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE
 
-    5 ParameterList: ε
-    6              | Param
-    7              | Param COMMA ParameterList
+    5 ParameterList: ParamList
+
+    6 ParamList: Param
+    7          | Param SEMICOLON ParamList
 
     8 Param: IDList COLON Type
+    9      | ε
 
-    9 IDList: IDENTIFIER
-   10       | IDENTIFIER COMMA IDList
+   10 IDList: IDENTIFIER
+   11       | IDENTIFIER COMMA IDList
 
-   11 Body: Declarations
-   12     | Statements
-   13     | Declarations Statements
+   12 Body: Declarations
+   13     | Statements
+   14     | Declarations Statements
 
-   14 OptionalReturn: ε
-   15               | ReturnStatement
+   15 OptionalReturn: ε
+   16               | RETURN Expression SEMICOLON
 
-   16 ReturnStatement: RETURN Expression SEMICOLON
+   17 Block: LBRACE BlockContent RBRACE
 
-   17 Block: LBRACE Declarations Statements RBRACE
+   18 BlockContent: ε
+   19             | BlockItems
 
-   18 Declarations: ε
-   19             | Declaration Declarations
+   20 BlockItems: BlockItem
+   21           | BlockItem BlockItems
 
-   20 Declaration: VAR InitList SEMICOLON
-   21            | VAR IDList COLON ArrayType SEMICOLON
-   22            | Procedure
+   22 BlockItem: Declaration
+   23          | Statement
+   24          | NestedBlock
 
-   23 OptionalInit: ε
-   24             | EQUAL InitValues
+   25 NestedBlock: LBRACE BlockContent RBRACE
 
-   25 InitValues: Expression
-   26           | Expression COMMA InitValues
+   26 Declarations: ε
+   27             | Declaration Declarations
 
-   27 InitList: Init
-   28         | Init COMMA InitList
+   28 Declaration: VAR InitList SEMICOLON
+   29            | VAR IDList COLON ArrayType SEMICOLON
+   30            | Procedure
 
-   29 Init: IDList COLON Type OptionalInit
+   31 OptionalInit: ε
+   32             | EQUAL InitValues
 
-   30 ArrayType: Type LBRACKET INT_LITERAL RBRACKET
-   31          | ArrayType LBRACKET INT_LITERAL RBRACKET
-   32          | Type LBRACKET RBRACKET
+   33 InitValues: Expression
+   34           | Expression COMMA InitValues
 
-   33 Statements: ε
-   34           | Statement Statements
+   35 InitList: Init
+   36         | Init COMMA InitList
 
-   35 Statement: IDENTIFIER EQUAL Expression SEMICOLON
-   36          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON
-   37          | IF LPAREN Expression RPAREN Block
-   38          | IF LPAREN Expression RPAREN Block ELSE Block
-   39          | WHILE LPAREN Expression RPAREN Block
-   40          | LBRACE Statements RBRACE
-   41          | Procedure
+   37 Init: IDList COLON Type OptionalInit
 
-   42 Expression: Expression OR Expression
-   43           | Expression AND Expression
-   44           | Expression EQUALS Expression
-   45           | Expression NOTEQUAL Expression
-   46           | Expression LT Expression
-   47           | Expression LTE Expression
-   48           | Expression GT Expression
-   49           | Expression GTE Expression
-   50           | AdditiveExpr
+   38 ArrayType: Type LBRACKET INT_LITERAL RBRACKET
+   39          | ArrayType LBRACKET INT_LITERAL RBRACKET
+   40          | Type LBRACKET RBRACKET
 
-   51 AdditiveExpr: AdditiveExpr PLUS MultiplicativeExpr
-   52             | AdditiveExpr MINUS MultiplicativeExpr
-   53             | MultiplicativeExpr
+   41 Statements: ε
+   42           | Statement Statements
 
-   54 MultiplicativeExpr: MultiplicativeExpr MUL UnaryExpr
-   55                   | MultiplicativeExpr DIV UnaryExpr
-   56                   | UnaryExpr
+   43 Statement: IDENTIFIER EQUAL Expression SEMICOLON
+   44          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON
+   45          | IF LPAREN Expression RPAREN Block
+   46          | IF LPAREN Expression RPAREN Block ELSE Block
+   47          | WHILE LPAREN Expression RPAREN Block
+   48          | LBRACE Statements RBRACE
+   49          | NestedBlock
+   50          | Procedure
 
-   57 UnaryExpr: NOT UnaryExpr
-   58          | MINUS UnaryExpr
-   59          | AMP Variable
-   60          | DEREFERENCE PrimaryExpr
-   61          | BAR Expression BAR
-   62          | PrimaryExpr
+   51 Expression: Expression OR Expression
+   52           | Expression AND Expression
+   53           | Expression EQUALS Expression
+   54           | Expression NOTEQUAL Expression
+   55           | Expression LT Expression
+   56           | Expression LTE Expression
+   57           | Expression GT Expression
+   58           | Expression GTE Expression
+   59           | AdditiveExpr
 
-   63 Variable: IDENTIFIER
-   64         | IDENTIFIER LBRACKET Expression RBRACKET
+   60 AdditiveExpr: AdditiveExpr PLUS MultiplicativeExpr
+   61             | AdditiveExpr MINUS MultiplicativeExpr
+   62             | MultiplicativeExpr
 
-   65 PrimaryExpr: IDENTIFIER
-   66            | INT_LITERAL
-   67            | LPAREN Expression RPAREN
-   68            | IDENTIFIER LPAREN ArgumentList RPAREN
-   69            | IDENTIFIER LBRACKET Expression RBRACKET
-   70            | STRING_LITERAL
-   71            | CHAR_LITERAL
-   72            | TRUE
-   73            | FALSE
-   74            | NULLTOKEN
+   63 MultiplicativeExpr: MultiplicativeExpr MUL UnaryExpr
+   64                   | MultiplicativeExpr DIV UnaryExpr
+   65                   | UnaryExpr
 
-   75 ArgumentList: ε
-   76             | NonEmptyArgumentList
+   66 UnaryExpr: NOT UnaryExpr
+   67          | MINUS UnaryExpr
+   68          | AMP Variable
+   69          | DEREFERENCE PrimaryExpr
+   70          | BAR Expression BAR
+   71          | PrimaryExpr
 
-   77 NonEmptyArgumentList: Expression
-   78                     | Expression COMMA NonEmptyArgumentList
+   72 Variable: IDENTIFIER
+   73         | IDENTIFIER LBRACKET Expression RBRACKET
 
-   79 Type: BOOLEAN
-   80     | CHAR
-   81     | INTEGER
-   82     | STRING
-   83     | INTPTR
-   84     | CHARPTR
+   74 PrimaryExpr: IDENTIFIER
+   75            | INT_LITERAL
+   76            | LPAREN Expression RPAREN
+   77            | IDENTIFIER LPAREN ArgumentList RPAREN
+   78            | IDENTIFIER LBRACKET Expression RBRACKET
+   79            | STRING_LITERAL
+   80            | CHAR_LITERAL
+   81            | TRUE
+   82            | FALSE
+   83            | NULLTOKEN
+
+   84 ArgumentList: ε
+   85             | NonEmptyArgumentList
+
+   86 NonEmptyArgumentList: Expression
+   87                     | Expression COMMA NonEmptyArgumentList
+
+   88 Type: BOOLEAN
+   89     | CHAR
+   90     | INTEGER
+   91     | STRING
+   92     | INTPTR
+   93     | CHARPTR
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    BOOLEAN (258) 79
-    CHAR (259) 80
-    INTEGER (260) 81
-    STRING (261) 82
-    INTPTR (262) 83
-    CHARPTR (263) 84
-    IF (264) 37 38
-    ELSE (265) 38
-    WHILE (266) 39
-    VAR (267) 20 21
+    BOOLEAN (258) 88
+    CHAR (259) 89
+    INTEGER (260) 90
+    STRING (261) 91
+    INTPTR (262) 92
+    CHARPTR (263) 93
+    IF (264) 45 46
+    ELSE (265) 46
+    WHILE (266) 47
+    VAR (267) 28 29
     PROCEDURE (268) 4
     RETURN (269) 4 16
-    NULLTOKEN (270) 74
-    AND (271) 43
-    DIV (272) 55
-    EQUAL (273) 24 35 36
-    EQUALS (274) 44
-    GT (275) 48
-    GTE (276) 49
-    LT (277) 46
-    LTE (278) 47
-    MINUS (279) 52 58
-    NOT (280) 57
-    NOTEQUAL (281) 45
-    OR (282) 42
-    PLUS (283) 51
-    MUL (284) 54
-    AMP (285) 59
-    DEREFERENCE (286) 60
-    TRUE (287) 72
-    FALSE (288) 73
-    INT_LITERAL (289) 30 31 66
-    IDENTIFIER (290) 4 9 10 35 36 63 64 65 68 69
-    COMMA (291) 7 10 26 28 78
-    COLON (292) 8 21 29
+    NULLTOKEN (270) 83
+    AND (271) 52
+    DIV (272) 64
+    EQUAL (273) 32 43 44
+    EQUALS (274) 53
+    GT (275) 57
+    GTE (276) 58
+    LT (277) 55
+    LTE (278) 56
+    MINUS (279) 61 67
+    NOT (280) 66
+    NOTEQUAL (281) 54
+    OR (282) 51
+    PLUS (283) 60
+    MUL (284) 63
+    AMP (285) 68
+    DEREFERENCE (286) 69
+    TRUE (287) 81
+    FALSE (288) 82
+    INT_LITERAL (289) 38 39 75
+    IDENTIFIER (290) 4 10 11 43 44 72 73 74 77 78
+    COMMA (291) 11 34 36 87
+    COLON (292) 8 29 37
     UMINUS (293)
-    LBRACE (294) 4 17 40
-    RBRACE (295) 4 17 40
-    SEMICOLON (296) 16 20 21 35 36
-    LPAREN (297) 4 37 38 39 67 68
-    RPAREN (298) 4 37 38 39 67 68
-    BAR (299) 61
-    LBRACKET (300) 30 31 32 36 64 69
-    RBRACKET (301) 30 31 32 36 64 69
-    STRING_LITERAL (302) 70
-    CHAR_LITERAL (303) 71
+    LBRACE (294) 4 17 25 48
+    RBRACE (295) 4 17 25 48
+    SEMICOLON (296) 7 16 28 29 43 44
+    LPAREN (297) 4 45 46 47 76 77
+    RPAREN (298) 4 45 46 47 76 77
+    BAR (299) 70
+    LBRACKET (300) 38 39 40 44 73 78
+    RBRACKET (301) 38 39 40 44 73 78
+    STRING_LITERAL (302) 79
+    CHAR_LITERAL (303) 80
 
 
 Nonterminals, with rules where they appear
@@ -187,82 +202,94 @@ Nonterminals, with rules where they appear
         on right: 1 3
     Procedure (52)
         on left: 4
-        on right: 2 3 22 41
+        on right: 2 3 30 50
     ParameterList (53)
-        on left: 5 6 7
-        on right: 4 7
-    Param (54)
-        on left: 8
+        on left: 5
+        on right: 4
+    ParamList (54)
+        on left: 6 7
+        on right: 5 7
+    Param (55)
+        on left: 8 9
         on right: 6 7
-    IDList (55)
-        on left: 9 10
-        on right: 8 10 21 29
-    Body (56)
-        on left: 11 12 13
+    IDList (56)
+        on left: 10 11
+        on right: 8 11 29 37
+    Body (57)
+        on left: 12 13 14
         on right: 4
-    OptionalReturn (57)
-        on left: 14 15
+    OptionalReturn (58)
+        on left: 15 16
         on right: 4
-    ReturnStatement (58)
-        on left: 16
-        on right: 15
     Block (59)
         on left: 17
-        on right: 37 38 39
-    Declarations (60)
+        on right: 45 46 47
+    BlockContent (60)
         on left: 18 19
-        on right: 11 13 17 19
-    Declaration (61)
-        on left: 20 21 22
-        on right: 19
-    OptionalInit (62)
-        on left: 23 24
-        on right: 29
-    InitValues (63)
-        on left: 25 26
-        on right: 24 26
-    InitList (64)
-        on left: 27 28
-        on right: 20 28
-    Init (65)
-        on left: 29
-        on right: 27 28
-    ArrayType (66)
-        on left: 30 31 32
-        on right: 21 31
-    Statements (67)
+        on right: 17 25
+    BlockItems (61)
+        on left: 20 21
+        on right: 19 21
+    BlockItem (62)
+        on left: 22 23 24
+        on right: 20 21
+    NestedBlock (63)
+        on left: 25
+        on right: 24 49
+    Declarations (64)
+        on left: 26 27
+        on right: 12 14 27
+    Declaration (65)
+        on left: 28 29 30
+        on right: 22 27
+    OptionalInit (66)
+        on left: 31 32
+        on right: 37
+    InitValues (67)
         on left: 33 34
-        on right: 12 13 17 34 40
-    Statement (68)
-        on left: 35 36 37 38 39 40 41
-        on right: 34
-    Expression (69)
-        on left: 42 43 44 45 46 47 48 49 50
-        on right: 16 25 26 35 36 37 38 39 42 43 44 45 46 47 48 49 61 64 67 69 77 78
-    AdditiveExpr (70)
-        on left: 51 52 53
-        on right: 50 51 52
-    MultiplicativeExpr (71)
-        on left: 54 55 56
-        on right: 51 52 53 54 55
-    UnaryExpr (72)
-        on left: 57 58 59 60 61 62
-        on right: 54 55 56 57 58
-    Variable (73)
-        on left: 63 64
-        on right: 59
-    PrimaryExpr (74)
-        on left: 65 66 67 68 69 70 71 72 73 74
-        on right: 60 62
-    ArgumentList (75)
-        on left: 75 76
+        on right: 32 34
+    InitList (68)
+        on left: 35 36
+        on right: 28 36
+    Init (69)
+        on left: 37
+        on right: 35 36
+    ArrayType (70)
+        on left: 38 39 40
+        on right: 29 39
+    Statements (71)
+        on left: 41 42
+        on right: 13 14 42 48
+    Statement (72)
+        on left: 43 44 45 46 47 48 49 50
+        on right: 23 42
+    Expression (73)
+        on left: 51 52 53 54 55 56 57 58 59
+        on right: 16 33 34 43 44 45 46 47 51 52 53 54 55 56 57 58 70 73 76 78 86 87
+    AdditiveExpr (74)
+        on left: 60 61 62
+        on right: 59 60 61
+    MultiplicativeExpr (75)
+        on left: 63 64 65
+        on right: 60 61 62 63 64
+    UnaryExpr (76)
+        on left: 66 67 68 69 70 71
+        on right: 63 64 65 66 67
+    Variable (77)
+        on left: 72 73
         on right: 68
-    NonEmptyArgumentList (76)
-        on left: 77 78
-        on right: 76 78
-    Type (77)
-        on left: 79 80 81 82 83 84
-        on right: 4 8 29 30 32
+    PrimaryExpr (78)
+        on left: 74 75 76 77 78 79 80 81 82 83
+        on right: 69 71
+    ArgumentList (79)
+        on left: 84 85
+        on right: 77
+    NonEmptyArgumentList (80)
+        on left: 86 87
+        on right: 85 87
+    Type (81)
+        on left: 88 89 90 91 92 93
+        on right: 4 8 37 38 40
 
 
 State 0
@@ -337,2113 +364,2236 @@ State 8
 
     IDENTIFIER  shift, and go to state 9
 
-    $default  reduce using rule 5 (ParameterList)
+    $default  reduce using rule 9 (Param)
 
     ParameterList  go to state 10
-    Param          go to state 11
-    IDList         go to state 12
+    ParamList      go to state 11
+    Param          go to state 12
+    IDList         go to state 13
 
 
 State 9
 
-    9 IDList: IDENTIFIER •
-   10       | IDENTIFIER • COMMA IDList
+   10 IDList: IDENTIFIER •
+   11       | IDENTIFIER • COMMA IDList
 
-    COMMA  shift, and go to state 13
+    COMMA  shift, and go to state 14
 
-    $default  reduce using rule 9 (IDList)
+    $default  reduce using rule 10 (IDList)
 
 
 State 10
 
     4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList • RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE
 
-    RPAREN  shift, and go to state 14
+    RPAREN  shift, and go to state 15
 
 
 State 11
 
-    6 ParameterList: Param •
-    7              | Param • COMMA ParameterList
+    5 ParameterList: ParamList •
 
-    COMMA  shift, and go to state 15
-
-    $default  reduce using rule 6 (ParameterList)
+    $default  reduce using rule 5 (ParameterList)
 
 
 State 12
 
-    8 Param: IDList • COLON Type
+    6 ParamList: Param •
+    7          | Param • SEMICOLON ParamList
 
-    COLON  shift, and go to state 16
+    SEMICOLON  shift, and go to state 16
+
+    $default  reduce using rule 6 (ParamList)
 
 
 State 13
 
-   10 IDList: IDENTIFIER COMMA • IDList
+    8 Param: IDList • COLON Type
 
-    IDENTIFIER  shift, and go to state 9
-
-    IDList  go to state 17
+    COLON  shift, and go to state 17
 
 
 State 14
 
-    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN • RETURN Type LBRACE Body OptionalReturn RBRACE
+   11 IDList: IDENTIFIER COMMA • IDList
 
-    RETURN  shift, and go to state 18
+    IDENTIFIER  shift, and go to state 9
+
+    IDList  go to state 18
 
 
 State 15
 
-    7 ParameterList: Param COMMA • ParameterList
+    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN • RETURN Type LBRACE Body OptionalReturn RBRACE
 
-    IDENTIFIER  shift, and go to state 9
-
-    $default  reduce using rule 5 (ParameterList)
-
-    ParameterList  go to state 19
-    Param          go to state 11
-    IDList         go to state 12
+    RETURN  shift, and go to state 19
 
 
 State 16
 
-    8 Param: IDList COLON • Type
+    7 ParamList: Param SEMICOLON • ParamList
 
-    BOOLEAN  shift, and go to state 20
-    CHAR     shift, and go to state 21
-    INTEGER  shift, and go to state 22
-    STRING   shift, and go to state 23
-    INTPTR   shift, and go to state 24
-    CHARPTR  shift, and go to state 25
+    IDENTIFIER  shift, and go to state 9
 
-    Type  go to state 26
+    $default  reduce using rule 9 (Param)
+
+    ParamList  go to state 20
+    Param      go to state 12
+    IDList     go to state 13
 
 
 State 17
 
-   10 IDList: IDENTIFIER COMMA IDList •
+    8 Param: IDList COLON • Type
 
-    $default  reduce using rule 10 (IDList)
-
-
-State 18
-
-    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN • Type LBRACE Body OptionalReturn RBRACE
-
-    BOOLEAN  shift, and go to state 20
-    CHAR     shift, and go to state 21
-    INTEGER  shift, and go to state 22
-    STRING   shift, and go to state 23
-    INTPTR   shift, and go to state 24
-    CHARPTR  shift, and go to state 25
+    BOOLEAN  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    INTEGER  shift, and go to state 23
+    STRING   shift, and go to state 24
+    INTPTR   shift, and go to state 25
+    CHARPTR  shift, and go to state 26
 
     Type  go to state 27
 
 
+State 18
+
+   11 IDList: IDENTIFIER COMMA IDList •
+
+    $default  reduce using rule 11 (IDList)
+
+
 State 19
 
-    7 ParameterList: Param COMMA ParameterList •
+    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN • Type LBRACE Body OptionalReturn RBRACE
 
-    $default  reduce using rule 7 (ParameterList)
+    BOOLEAN  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    INTEGER  shift, and go to state 23
+    STRING   shift, and go to state 24
+    INTPTR   shift, and go to state 25
+    CHARPTR  shift, and go to state 26
+
+    Type  go to state 28
 
 
 State 20
 
-   79 Type: BOOLEAN •
+    7 ParamList: Param SEMICOLON ParamList •
 
-    $default  reduce using rule 79 (Type)
+    $default  reduce using rule 7 (ParamList)
 
 
 State 21
 
-   80 Type: CHAR •
+   88 Type: BOOLEAN •
 
-    $default  reduce using rule 80 (Type)
+    $default  reduce using rule 88 (Type)
 
 
 State 22
 
-   81 Type: INTEGER •
+   89 Type: CHAR •
 
-    $default  reduce using rule 81 (Type)
+    $default  reduce using rule 89 (Type)
 
 
 State 23
 
-   82 Type: STRING •
+   90 Type: INTEGER •
 
-    $default  reduce using rule 82 (Type)
+    $default  reduce using rule 90 (Type)
 
 
 State 24
 
-   83 Type: INTPTR •
+   91 Type: STRING •
 
-    $default  reduce using rule 83 (Type)
+    $default  reduce using rule 91 (Type)
 
 
 State 25
 
-   84 Type: CHARPTR •
+   92 Type: INTPTR •
 
-    $default  reduce using rule 84 (Type)
+    $default  reduce using rule 92 (Type)
 
 
 State 26
+
+   93 Type: CHARPTR •
+
+    $default  reduce using rule 93 (Type)
+
+
+State 27
 
     8 Param: IDList COLON Type •
 
     $default  reduce using rule 8 (Param)
 
 
-State 27
+State 28
 
     4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type • LBRACE Body OptionalReturn RBRACE
 
-    LBRACE  shift, and go to state 28
-
-
-State 28
-
-    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE • Body OptionalReturn RBRACE
-
-    IF          shift, and go to state 29
-    WHILE       shift, and go to state 30
-    VAR         shift, and go to state 31
-    PROCEDURE   shift, and go to state 1
-    IDENTIFIER  shift, and go to state 32
-    LBRACE      shift, and go to state 33
-
-    IF          [reduce using rule 18 (Declarations)]
-    WHILE       [reduce using rule 18 (Declarations)]
-    PROCEDURE   [reduce using rule 18 (Declarations)]
-    RETURN      reduce using rule 18 (Declarations)
-    RETURN      [reduce using rule 33 (Statements)]
-    IDENTIFIER  [reduce using rule 18 (Declarations)]
-    LBRACE      [reduce using rule 18 (Declarations)]
-    RBRACE      reduce using rule 18 (Declarations)
-    RBRACE      [reduce using rule 33 (Statements)]
-    $default    reduce using rule 18 (Declarations)
-
-    Procedure     go to state 34
-    Body          go to state 35
-    Declarations  go to state 36
-    Declaration   go to state 37
-    Statements    go to state 38
-    Statement     go to state 39
+    LBRACE  shift, and go to state 29
 
 
 State 29
 
-   37 Statement: IF • LPAREN Expression RPAREN Block
-   38          | IF • LPAREN Expression RPAREN Block ELSE Block
+    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE • Body OptionalReturn RBRACE
 
-    LPAREN  shift, and go to state 40
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    VAR         shift, and go to state 32
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    IF          [reduce using rule 26 (Declarations)]
+    WHILE       [reduce using rule 26 (Declarations)]
+    PROCEDURE   [reduce using rule 26 (Declarations)]
+    RETURN      reduce using rule 26 (Declarations)
+    RETURN      [reduce using rule 41 (Statements)]
+    IDENTIFIER  [reduce using rule 26 (Declarations)]
+    LBRACE      [reduce using rule 26 (Declarations)]
+    RBRACE      reduce using rule 26 (Declarations)
+    RBRACE      [reduce using rule 41 (Statements)]
+    $default    reduce using rule 26 (Declarations)
+
+    Procedure     go to state 35
+    Body          go to state 36
+    NestedBlock   go to state 37
+    Declarations  go to state 38
+    Declaration   go to state 39
+    Statements    go to state 40
+    Statement     go to state 41
 
 
 State 30
 
-   39 Statement: WHILE • LPAREN Expression RPAREN Block
+   45 Statement: IF • LPAREN Expression RPAREN Block
+   46          | IF • LPAREN Expression RPAREN Block ELSE Block
 
-    LPAREN  shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
 
 State 31
 
-   20 Declaration: VAR • InitList SEMICOLON
-   21            | VAR • IDList COLON ArrayType SEMICOLON
+   47 Statement: WHILE • LPAREN Expression RPAREN Block
 
-    IDENTIFIER  shift, and go to state 9
-
-    IDList    go to state 42
-    InitList  go to state 43
-    Init      go to state 44
+    LPAREN  shift, and go to state 43
 
 
 State 32
 
-   35 Statement: IDENTIFIER • EQUAL Expression SEMICOLON
-   36          | IDENTIFIER • LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON
+   28 Declaration: VAR • InitList SEMICOLON
+   29            | VAR • IDList COLON ArrayType SEMICOLON
 
-    EQUAL     shift, and go to state 45
-    LBRACKET  shift, and go to state 46
+    IDENTIFIER  shift, and go to state 9
+
+    IDList    go to state 44
+    InitList  go to state 45
+    Init      go to state 46
 
 
 State 33
 
-   40 Statement: LBRACE • Statements RBRACE
+   43 Statement: IDENTIFIER • EQUAL Expression SEMICOLON
+   44          | IDENTIFIER • LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON
 
-    IF          shift, and go to state 29
-    WHILE       shift, and go to state 30
-    PROCEDURE   shift, and go to state 1
-    IDENTIFIER  shift, and go to state 32
-    LBRACE      shift, and go to state 33
-
-    $default  reduce using rule 33 (Statements)
-
-    Procedure   go to state 47
-    Statements  go to state 48
-    Statement   go to state 39
+    EQUAL     shift, and go to state 47
+    LBRACKET  shift, and go to state 48
 
 
 State 34
 
-   22 Declaration: Procedure •
-   41 Statement: Procedure •
+   25 NestedBlock: LBRACE • BlockContent RBRACE
+   48 Statement: LBRACE • Statements RBRACE
 
-    IF          reduce using rule 22 (Declaration)
-    IF          [reduce using rule 41 (Statement)]
-    WHILE       reduce using rule 22 (Declaration)
-    WHILE       [reduce using rule 41 (Statement)]
-    PROCEDURE   reduce using rule 22 (Declaration)
-    PROCEDURE   [reduce using rule 41 (Statement)]
-    RETURN      reduce using rule 22 (Declaration)
-    RETURN      [reduce using rule 41 (Statement)]
-    IDENTIFIER  reduce using rule 22 (Declaration)
-    IDENTIFIER  [reduce using rule 41 (Statement)]
-    LBRACE      reduce using rule 22 (Declaration)
-    LBRACE      [reduce using rule 41 (Statement)]
-    RBRACE      reduce using rule 22 (Declaration)
-    RBRACE      [reduce using rule 41 (Statement)]
-    $default    reduce using rule 22 (Declaration)
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    VAR         shift, and go to state 32
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    RBRACE    reduce using rule 18 (BlockContent)
+    RBRACE    [reduce using rule 41 (Statements)]
+    $default  reduce using rule 18 (BlockContent)
+
+    Procedure     go to state 35
+    BlockContent  go to state 49
+    BlockItems    go to state 50
+    BlockItem     go to state 51
+    NestedBlock   go to state 52
+    Declaration   go to state 53
+    Statements    go to state 54
+    Statement     go to state 55
 
 
 State 35
 
-    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body • OptionalReturn RBRACE
+   30 Declaration: Procedure •
+   50 Statement: Procedure •
 
-    RETURN  shift, and go to state 49
-
-    $default  reduce using rule 14 (OptionalReturn)
-
-    OptionalReturn   go to state 50
-    ReturnStatement  go to state 51
+    IF          reduce using rule 30 (Declaration)
+    IF          [reduce using rule 50 (Statement)]
+    WHILE       reduce using rule 30 (Declaration)
+    WHILE       [reduce using rule 50 (Statement)]
+    VAR         reduce using rule 30 (Declaration)
+    VAR         [reduce using rule 50 (Statement)]
+    PROCEDURE   reduce using rule 30 (Declaration)
+    PROCEDURE   [reduce using rule 50 (Statement)]
+    RETURN      reduce using rule 30 (Declaration)
+    RETURN      [reduce using rule 50 (Statement)]
+    IDENTIFIER  reduce using rule 30 (Declaration)
+    IDENTIFIER  [reduce using rule 50 (Statement)]
+    LBRACE      reduce using rule 30 (Declaration)
+    LBRACE      [reduce using rule 50 (Statement)]
+    RBRACE      reduce using rule 30 (Declaration)
+    RBRACE      [reduce using rule 50 (Statement)]
+    $default    reduce using rule 30 (Declaration)
 
 
 State 36
 
-   11 Body: Declarations •
-   13     | Declarations • Statements
+    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body • OptionalReturn RBRACE
 
-    IF          shift, and go to state 29
-    WHILE       shift, and go to state 30
-    PROCEDURE   shift, and go to state 1
-    IDENTIFIER  shift, and go to state 32
-    LBRACE      shift, and go to state 33
+    RETURN  shift, and go to state 56
 
-    RETURN    reduce using rule 11 (Body)
-    RETURN    [reduce using rule 33 (Statements)]
-    RBRACE    reduce using rule 11 (Body)
-    RBRACE    [reduce using rule 33 (Statements)]
-    $default  reduce using rule 11 (Body)
+    $default  reduce using rule 15 (OptionalReturn)
 
-    Procedure   go to state 47
-    Statements  go to state 52
-    Statement   go to state 39
+    OptionalReturn  go to state 57
 
 
 State 37
 
-   19 Declarations: Declaration • Declarations
+   49 Statement: NestedBlock •
 
-    VAR        shift, and go to state 31
-    PROCEDURE  shift, and go to state 1
-
-    PROCEDURE  [reduce using rule 18 (Declarations)]
-    $default   reduce using rule 18 (Declarations)
-
-    Procedure     go to state 53
-    Declarations  go to state 54
-    Declaration   go to state 37
+    $default  reduce using rule 49 (Statement)
 
 
 State 38
 
-   12 Body: Statements •
+   12 Body: Declarations •
+   14     | Declarations • Statements
 
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    RETURN    reduce using rule 12 (Body)
+    RETURN    [reduce using rule 41 (Statements)]
+    RBRACE    reduce using rule 12 (Body)
+    RBRACE    [reduce using rule 41 (Statements)]
     $default  reduce using rule 12 (Body)
+
+    Procedure    go to state 58
+    NestedBlock  go to state 37
+    Statements   go to state 59
+    Statement    go to state 41
 
 
 State 39
 
-   34 Statements: Statement • Statements
+   27 Declarations: Declaration • Declarations
 
-    IF          shift, and go to state 29
-    WHILE       shift, and go to state 30
-    PROCEDURE   shift, and go to state 1
-    IDENTIFIER  shift, and go to state 32
-    LBRACE      shift, and go to state 33
+    VAR        shift, and go to state 32
+    PROCEDURE  shift, and go to state 1
 
-    $default  reduce using rule 33 (Statements)
+    PROCEDURE  [reduce using rule 26 (Declarations)]
+    $default   reduce using rule 26 (Declarations)
 
-    Procedure   go to state 47
-    Statements  go to state 55
-    Statement   go to state 39
+    Procedure     go to state 60
+    Declarations  go to state 61
+    Declaration   go to state 39
 
 
 State 40
 
-   37 Statement: IF LPAREN • Expression RPAREN Block
-   38          | IF LPAREN • Expression RPAREN Block ELSE Block
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 69
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
-State 41
-
-   39 Statement: WHILE LPAREN • Expression RPAREN Block
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 74
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
-State 42
-
-   21 Declaration: VAR IDList • COLON ArrayType SEMICOLON
-   29 Init: IDList • COLON Type OptionalInit
-
-    COLON  shift, and go to state 75
-
-
-State 43
-
-   20 Declaration: VAR InitList • SEMICOLON
-
-    SEMICOLON  shift, and go to state 76
-
-
-State 44
-
-   27 InitList: Init •
-   28         | Init • COMMA InitList
-
-    COMMA  shift, and go to state 77
-
-    $default  reduce using rule 27 (InitList)
-
-
-State 45
-
-   35 Statement: IDENTIFIER EQUAL • Expression SEMICOLON
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 78
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
-State 46
-
-   36 Statement: IDENTIFIER LBRACKET • Expression RBRACKET EQUAL Expression SEMICOLON
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 79
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
-State 47
-
-   41 Statement: Procedure •
-
-    $default  reduce using rule 41 (Statement)
-
-
-State 48
-
-   40 Statement: LBRACE Statements • RBRACE
-
-    RBRACE  shift, and go to state 80
-
-
-State 49
-
-   16 ReturnStatement: RETURN • Expression SEMICOLON
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 81
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
-State 50
-
-    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body OptionalReturn • RBRACE
-
-    RBRACE  shift, and go to state 82
-
-
-State 51
-
-   15 OptionalReturn: ReturnStatement •
-
-    $default  reduce using rule 15 (OptionalReturn)
-
-
-State 52
-
-   13 Body: Declarations Statements •
+   13 Body: Statements •
 
     $default  reduce using rule 13 (Body)
 
 
+State 41
+
+   42 Statements: Statement • Statements
+
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    $default  reduce using rule 41 (Statements)
+
+    Procedure    go to state 58
+    NestedBlock  go to state 37
+    Statements   go to state 62
+    Statement    go to state 41
+
+
+State 42
+
+   45 Statement: IF LPAREN • Expression RPAREN Block
+   46          | IF LPAREN • Expression RPAREN Block ELSE Block
+
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 76
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
+
+
+State 43
+
+   47 Statement: WHILE LPAREN • Expression RPAREN Block
+
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 81
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
+
+
+State 44
+
+   29 Declaration: VAR IDList • COLON ArrayType SEMICOLON
+   37 Init: IDList • COLON Type OptionalInit
+
+    COLON  shift, and go to state 82
+
+
+State 45
+
+   28 Declaration: VAR InitList • SEMICOLON
+
+    SEMICOLON  shift, and go to state 83
+
+
+State 46
+
+   35 InitList: Init •
+   36         | Init • COMMA InitList
+
+    COMMA  shift, and go to state 84
+
+    $default  reduce using rule 35 (InitList)
+
+
+State 47
+
+   43 Statement: IDENTIFIER EQUAL • Expression SEMICOLON
+
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 85
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
+
+
+State 48
+
+   44 Statement: IDENTIFIER LBRACKET • Expression RBRACKET EQUAL Expression SEMICOLON
+
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 86
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
+
+
+State 49
+
+   25 NestedBlock: LBRACE BlockContent • RBRACE
+
+    RBRACE  shift, and go to state 87
+
+
+State 50
+
+   19 BlockContent: BlockItems •
+
+    $default  reduce using rule 19 (BlockContent)
+
+
+State 51
+
+   20 BlockItems: BlockItem •
+   21           | BlockItem • BlockItems
+
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    VAR         shift, and go to state 32
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    $default  reduce using rule 20 (BlockItems)
+
+    Procedure    go to state 35
+    BlockItems   go to state 88
+    BlockItem    go to state 51
+    NestedBlock  go to state 52
+    Declaration  go to state 53
+    Statement    go to state 89
+
+
+State 52
+
+   24 BlockItem: NestedBlock •
+   49 Statement: NestedBlock •
+
+    IF          reduce using rule 24 (BlockItem)
+    IF          [reduce using rule 49 (Statement)]
+    WHILE       reduce using rule 24 (BlockItem)
+    WHILE       [reduce using rule 49 (Statement)]
+    VAR         reduce using rule 24 (BlockItem)
+    VAR         [reduce using rule 49 (Statement)]
+    PROCEDURE   reduce using rule 24 (BlockItem)
+    PROCEDURE   [reduce using rule 49 (Statement)]
+    IDENTIFIER  reduce using rule 24 (BlockItem)
+    IDENTIFIER  [reduce using rule 49 (Statement)]
+    LBRACE      reduce using rule 24 (BlockItem)
+    LBRACE      [reduce using rule 49 (Statement)]
+    RBRACE      reduce using rule 24 (BlockItem)
+    RBRACE      [reduce using rule 49 (Statement)]
+    $default    reduce using rule 24 (BlockItem)
+
+
 State 53
 
-   22 Declaration: Procedure •
+   22 BlockItem: Declaration •
 
-    $default  reduce using rule 22 (Declaration)
+    $default  reduce using rule 22 (BlockItem)
 
 
 State 54
 
-   19 Declarations: Declaration Declarations •
+   48 Statement: LBRACE Statements • RBRACE
 
-    $default  reduce using rule 19 (Declarations)
+    RBRACE  shift, and go to state 90
 
 
 State 55
 
-   34 Statements: Statement Statements •
+   23 BlockItem: Statement •
+   42 Statements: Statement • Statements
 
-    $default  reduce using rule 34 (Statements)
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    IF          [reduce using rule 23 (BlockItem)]
+    WHILE       [reduce using rule 23 (BlockItem)]
+    PROCEDURE   [reduce using rule 23 (BlockItem)]
+    IDENTIFIER  [reduce using rule 23 (BlockItem)]
+    LBRACE      [reduce using rule 23 (BlockItem)]
+    RBRACE      reduce using rule 23 (BlockItem)
+    RBRACE      [reduce using rule 41 (Statements)]
+    $default    reduce using rule 23 (BlockItem)
+
+    Procedure    go to state 58
+    NestedBlock  go to state 37
+    Statements   go to state 62
+    Statement    go to state 41
 
 
 State 56
 
-   74 PrimaryExpr: NULLTOKEN •
+   16 OptionalReturn: RETURN • Expression SEMICOLON
 
-    $default  reduce using rule 74 (PrimaryExpr)
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 91
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 57
 
-   58 UnaryExpr: MINUS • UnaryExpr
+    4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body OptionalReturn • RBRACE
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    UnaryExpr    go to state 83
-    PrimaryExpr  go to state 73
+    RBRACE  shift, and go to state 92
 
 
 State 58
 
-   57 UnaryExpr: NOT • UnaryExpr
+   50 Statement: Procedure •
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    UnaryExpr    go to state 84
-    PrimaryExpr  go to state 73
+    $default  reduce using rule 50 (Statement)
 
 
 State 59
 
-   59 UnaryExpr: AMP • Variable
+   14 Body: Declarations Statements •
 
-    IDENTIFIER  shift, and go to state 85
-
-    Variable  go to state 86
+    $default  reduce using rule 14 (Body)
 
 
 State 60
 
-   60 UnaryExpr: DEREFERENCE • PrimaryExpr
+   30 Declaration: Procedure •
 
-    NULLTOKEN       shift, and go to state 56
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    PrimaryExpr  go to state 87
+    $default  reduce using rule 30 (Declaration)
 
 
 State 61
 
-   72 PrimaryExpr: TRUE •
+   27 Declarations: Declaration Declarations •
 
-    $default  reduce using rule 72 (PrimaryExpr)
+    $default  reduce using rule 27 (Declarations)
 
 
 State 62
 
-   73 PrimaryExpr: FALSE •
+   42 Statements: Statement Statements •
 
-    $default  reduce using rule 73 (PrimaryExpr)
+    $default  reduce using rule 42 (Statements)
 
 
 State 63
 
-   66 PrimaryExpr: INT_LITERAL •
+   83 PrimaryExpr: NULLTOKEN •
 
-    $default  reduce using rule 66 (PrimaryExpr)
+    $default  reduce using rule 83 (PrimaryExpr)
 
 
 State 64
 
-   65 PrimaryExpr: IDENTIFIER •
-   68            | IDENTIFIER • LPAREN ArgumentList RPAREN
-   69            | IDENTIFIER • LBRACKET Expression RBRACKET
+   67 UnaryExpr: MINUS • UnaryExpr
 
-    LPAREN    shift, and go to state 88
-    LBRACKET  shift, and go to state 89
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    $default  reduce using rule 65 (PrimaryExpr)
+    UnaryExpr    go to state 93
+    PrimaryExpr  go to state 80
 
 
 State 65
 
-   67 PrimaryExpr: LPAREN • Expression RPAREN
+   66 UnaryExpr: NOT • UnaryExpr
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    Expression          go to state 90
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    UnaryExpr    go to state 94
+    PrimaryExpr  go to state 80
 
 
 State 66
 
-   61 UnaryExpr: BAR • Expression BAR
+   68 UnaryExpr: AMP • Variable
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    IDENTIFIER  shift, and go to state 95
 
-    Expression          go to state 91
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    Variable  go to state 96
 
 
 State 67
 
-   70 PrimaryExpr: STRING_LITERAL •
+   69 UnaryExpr: DEREFERENCE • PrimaryExpr
 
-    $default  reduce using rule 70 (PrimaryExpr)
+    NULLTOKEN       shift, and go to state 63
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    PrimaryExpr  go to state 97
 
 
 State 68
 
-   71 PrimaryExpr: CHAR_LITERAL •
+   81 PrimaryExpr: TRUE •
 
-    $default  reduce using rule 71 (PrimaryExpr)
+    $default  reduce using rule 81 (PrimaryExpr)
 
 
 State 69
 
-   37 Statement: IF LPAREN Expression • RPAREN Block
-   38          | IF LPAREN Expression • RPAREN Block ELSE Block
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   82 PrimaryExpr: FALSE •
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    RPAREN    shift, and go to state 100
+    $default  reduce using rule 82 (PrimaryExpr)
 
 
 State 70
 
-   50 Expression: AdditiveExpr •
-   51 AdditiveExpr: AdditiveExpr • PLUS MultiplicativeExpr
-   52             | AdditiveExpr • MINUS MultiplicativeExpr
+   75 PrimaryExpr: INT_LITERAL •
 
-    MINUS  shift, and go to state 101
-    PLUS   shift, and go to state 102
-
-    $default  reduce using rule 50 (Expression)
+    $default  reduce using rule 75 (PrimaryExpr)
 
 
 State 71
 
-   53 AdditiveExpr: MultiplicativeExpr •
-   54 MultiplicativeExpr: MultiplicativeExpr • MUL UnaryExpr
-   55                   | MultiplicativeExpr • DIV UnaryExpr
+   74 PrimaryExpr: IDENTIFIER •
+   77            | IDENTIFIER • LPAREN ArgumentList RPAREN
+   78            | IDENTIFIER • LBRACKET Expression RBRACKET
 
-    DIV  shift, and go to state 103
-    MUL  shift, and go to state 104
+    LPAREN    shift, and go to state 98
+    LBRACKET  shift, and go to state 99
 
-    $default  reduce using rule 53 (AdditiveExpr)
+    $default  reduce using rule 74 (PrimaryExpr)
 
 
 State 72
 
-   56 MultiplicativeExpr: UnaryExpr •
+   76 PrimaryExpr: LPAREN • Expression RPAREN
 
-    $default  reduce using rule 56 (MultiplicativeExpr)
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 100
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 73
 
-   62 UnaryExpr: PrimaryExpr •
+   70 UnaryExpr: BAR • Expression BAR
 
-    $default  reduce using rule 62 (UnaryExpr)
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 101
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 74
 
-   39 Statement: WHILE LPAREN Expression • RPAREN Block
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   79 PrimaryExpr: STRING_LITERAL •
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    RPAREN    shift, and go to state 105
+    $default  reduce using rule 79 (PrimaryExpr)
 
 
 State 75
 
-   21 Declaration: VAR IDList COLON • ArrayType SEMICOLON
-   29 Init: IDList COLON • Type OptionalInit
+   80 PrimaryExpr: CHAR_LITERAL •
 
-    BOOLEAN  shift, and go to state 20
-    CHAR     shift, and go to state 21
-    INTEGER  shift, and go to state 22
-    STRING   shift, and go to state 23
-    INTPTR   shift, and go to state 24
-    CHARPTR  shift, and go to state 25
-
-    ArrayType  go to state 106
-    Type       go to state 107
+    $default  reduce using rule 80 (PrimaryExpr)
 
 
 State 76
 
-   20 Declaration: VAR InitList SEMICOLON •
+   45 Statement: IF LPAREN Expression • RPAREN Block
+   46          | IF LPAREN Expression • RPAREN Block ELSE Block
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    $default  reduce using rule 20 (Declaration)
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    RPAREN    shift, and go to state 110
 
 
 State 77
 
-   28 InitList: Init COMMA • InitList
+   59 Expression: AdditiveExpr •
+   60 AdditiveExpr: AdditiveExpr • PLUS MultiplicativeExpr
+   61             | AdditiveExpr • MINUS MultiplicativeExpr
 
-    IDENTIFIER  shift, and go to state 9
+    MINUS  shift, and go to state 111
+    PLUS   shift, and go to state 112
 
-    IDList    go to state 108
-    InitList  go to state 109
-    Init      go to state 44
+    $default  reduce using rule 59 (Expression)
 
 
 State 78
 
-   35 Statement: IDENTIFIER EQUAL Expression • SEMICOLON
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   62 AdditiveExpr: MultiplicativeExpr •
+   63 MultiplicativeExpr: MultiplicativeExpr • MUL UnaryExpr
+   64                   | MultiplicativeExpr • DIV UnaryExpr
 
-    AND        shift, and go to state 92
-    EQUALS     shift, and go to state 93
-    GT         shift, and go to state 94
-    GTE        shift, and go to state 95
-    LT         shift, and go to state 96
-    LTE        shift, and go to state 97
-    NOTEQUAL   shift, and go to state 98
-    OR         shift, and go to state 99
-    SEMICOLON  shift, and go to state 110
+    DIV  shift, and go to state 113
+    MUL  shift, and go to state 114
+
+    $default  reduce using rule 62 (AdditiveExpr)
 
 
 State 79
 
-   36 Statement: IDENTIFIER LBRACKET Expression • RBRACKET EQUAL Expression SEMICOLON
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   65 MultiplicativeExpr: UnaryExpr •
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    RBRACKET  shift, and go to state 111
+    $default  reduce using rule 65 (MultiplicativeExpr)
 
 
 State 80
 
-   40 Statement: LBRACE Statements RBRACE •
+   71 UnaryExpr: PrimaryExpr •
 
-    $default  reduce using rule 40 (Statement)
+    $default  reduce using rule 71 (UnaryExpr)
 
 
 State 81
 
-   16 ReturnStatement: RETURN Expression • SEMICOLON
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   47 Statement: WHILE LPAREN Expression • RPAREN Block
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    AND        shift, and go to state 92
-    EQUALS     shift, and go to state 93
-    GT         shift, and go to state 94
-    GTE        shift, and go to state 95
-    LT         shift, and go to state 96
-    LTE        shift, and go to state 97
-    NOTEQUAL   shift, and go to state 98
-    OR         shift, and go to state 99
-    SEMICOLON  shift, and go to state 112
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    RPAREN    shift, and go to state 115
 
 
 State 82
+
+   29 Declaration: VAR IDList COLON • ArrayType SEMICOLON
+   37 Init: IDList COLON • Type OptionalInit
+
+    BOOLEAN  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    INTEGER  shift, and go to state 23
+    STRING   shift, and go to state 24
+    INTPTR   shift, and go to state 25
+    CHARPTR  shift, and go to state 26
+
+    ArrayType  go to state 116
+    Type       go to state 117
+
+
+State 83
+
+   28 Declaration: VAR InitList SEMICOLON •
+
+    $default  reduce using rule 28 (Declaration)
+
+
+State 84
+
+   36 InitList: Init COMMA • InitList
+
+    IDENTIFIER  shift, and go to state 9
+
+    IDList    go to state 118
+    InitList  go to state 119
+    Init      go to state 46
+
+
+State 85
+
+   43 Statement: IDENTIFIER EQUAL Expression • SEMICOLON
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+
+    AND        shift, and go to state 102
+    EQUALS     shift, and go to state 103
+    GT         shift, and go to state 104
+    GTE        shift, and go to state 105
+    LT         shift, and go to state 106
+    LTE        shift, and go to state 107
+    NOTEQUAL   shift, and go to state 108
+    OR         shift, and go to state 109
+    SEMICOLON  shift, and go to state 120
+
+
+State 86
+
+   44 Statement: IDENTIFIER LBRACKET Expression • RBRACKET EQUAL Expression SEMICOLON
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    RBRACKET  shift, and go to state 121
+
+
+State 87
+
+   25 NestedBlock: LBRACE BlockContent RBRACE •
+
+    $default  reduce using rule 25 (NestedBlock)
+
+
+State 88
+
+   21 BlockItems: BlockItem BlockItems •
+
+    $default  reduce using rule 21 (BlockItems)
+
+
+State 89
+
+   23 BlockItem: Statement •
+
+    $default  reduce using rule 23 (BlockItem)
+
+
+State 90
+
+   48 Statement: LBRACE Statements RBRACE •
+
+    $default  reduce using rule 48 (Statement)
+
+
+State 91
+
+   16 OptionalReturn: RETURN Expression • SEMICOLON
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+
+    AND        shift, and go to state 102
+    EQUALS     shift, and go to state 103
+    GT         shift, and go to state 104
+    GTE        shift, and go to state 105
+    LT         shift, and go to state 106
+    LTE        shift, and go to state 107
+    NOTEQUAL   shift, and go to state 108
+    OR         shift, and go to state 109
+    SEMICOLON  shift, and go to state 122
+
+
+State 92
 
     4 Procedure: PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE •
 
     $default  reduce using rule 4 (Procedure)
 
 
-State 83
-
-   58 UnaryExpr: MINUS UnaryExpr •
-
-    $default  reduce using rule 58 (UnaryExpr)
-
-
-State 84
-
-   57 UnaryExpr: NOT UnaryExpr •
-
-    $default  reduce using rule 57 (UnaryExpr)
-
-
-State 85
-
-   63 Variable: IDENTIFIER •
-   64         | IDENTIFIER • LBRACKET Expression RBRACKET
-
-    LBRACKET  shift, and go to state 113
-
-    $default  reduce using rule 63 (Variable)
-
-
-State 86
-
-   59 UnaryExpr: AMP Variable •
-
-    $default  reduce using rule 59 (UnaryExpr)
-
-
-State 87
-
-   60 UnaryExpr: DEREFERENCE PrimaryExpr •
-
-    $default  reduce using rule 60 (UnaryExpr)
-
-
-State 88
-
-   68 PrimaryExpr: IDENTIFIER LPAREN • ArgumentList RPAREN
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    $default  reduce using rule 75 (ArgumentList)
-
-    Expression            go to state 114
-    AdditiveExpr          go to state 70
-    MultiplicativeExpr    go to state 71
-    UnaryExpr             go to state 72
-    PrimaryExpr           go to state 73
-    ArgumentList          go to state 115
-    NonEmptyArgumentList  go to state 116
-
-
-State 89
-
-   69 PrimaryExpr: IDENTIFIER LBRACKET • Expression RBRACKET
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 117
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
-State 90
-
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
-   67 PrimaryExpr: LPAREN Expression • RPAREN
-
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    RPAREN    shift, and go to state 118
-
-
-State 91
-
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
-   61 UnaryExpr: BAR Expression • BAR
-
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    BAR       shift, and go to state 119
-
-
-State 92
-
-   43 Expression: Expression AND • Expression
-
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 120
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
-
-
 State 93
 
-   44 Expression: Expression EQUALS • Expression
+   67 UnaryExpr: MINUS UnaryExpr •
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 121
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 67 (UnaryExpr)
 
 
 State 94
 
-   48 Expression: Expression GT • Expression
+   66 UnaryExpr: NOT UnaryExpr •
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 122
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 66 (UnaryExpr)
 
 
 State 95
 
-   49 Expression: Expression GTE • Expression
+   72 Variable: IDENTIFIER •
+   73         | IDENTIFIER • LBRACKET Expression RBRACKET
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    LBRACKET  shift, and go to state 123
 
-    Expression          go to state 123
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 72 (Variable)
 
 
 State 96
 
-   46 Expression: Expression LT • Expression
+   68 UnaryExpr: AMP Variable •
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 124
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 68 (UnaryExpr)
 
 
 State 97
 
-   47 Expression: Expression LTE • Expression
+   69 UnaryExpr: DEREFERENCE PrimaryExpr •
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression          go to state 125
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 69 (UnaryExpr)
 
 
 State 98
 
-   45 Expression: Expression NOTEQUAL • Expression
+   77 PrimaryExpr: IDENTIFIER LPAREN • ArgumentList RPAREN
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    Expression          go to state 126
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 84 (ArgumentList)
+
+    Expression            go to state 124
+    AdditiveExpr          go to state 77
+    MultiplicativeExpr    go to state 78
+    UnaryExpr             go to state 79
+    PrimaryExpr           go to state 80
+    ArgumentList          go to state 125
+    NonEmptyArgumentList  go to state 126
 
 
 State 99
 
-   42 Expression: Expression OR • Expression
+   78 PrimaryExpr: IDENTIFIER LBRACKET • Expression RBRACKET
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
     Expression          go to state 127
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 100
 
-   37 Statement: IF LPAREN Expression RPAREN • Block
-   38          | IF LPAREN Expression RPAREN • Block ELSE Block
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+   76 PrimaryExpr: LPAREN Expression • RPAREN
 
-    LBRACE  shift, and go to state 128
-
-    Block  go to state 129
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    RPAREN    shift, and go to state 128
 
 
 State 101
 
-   52 AdditiveExpr: AdditiveExpr MINUS • MultiplicativeExpr
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+   70 UnaryExpr: BAR Expression • BAR
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    MultiplicativeExpr  go to state 130
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    BAR       shift, and go to state 129
 
 
 State 102
 
-   51 AdditiveExpr: AdditiveExpr PLUS • MultiplicativeExpr
+   52 Expression: Expression AND • Expression
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    MultiplicativeExpr  go to state 131
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    Expression          go to state 130
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 103
 
-   55 MultiplicativeExpr: MultiplicativeExpr DIV • UnaryExpr
+   53 Expression: Expression EQUALS • Expression
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    UnaryExpr    go to state 132
-    PrimaryExpr  go to state 73
+    Expression          go to state 131
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 104
 
-   54 MultiplicativeExpr: MultiplicativeExpr MUL • UnaryExpr
+   57 Expression: Expression GT • Expression
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    UnaryExpr    go to state 133
-    PrimaryExpr  go to state 73
+    Expression          go to state 132
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 105
 
-   39 Statement: WHILE LPAREN Expression RPAREN • Block
+   58 Expression: Expression GTE • Expression
 
-    LBRACE  shift, and go to state 128
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    Block  go to state 134
+    Expression          go to state 133
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 106
 
-   21 Declaration: VAR IDList COLON ArrayType • SEMICOLON
-   31 ArrayType: ArrayType • LBRACKET INT_LITERAL RBRACKET
+   55 Expression: Expression LT • Expression
 
-    SEMICOLON  shift, and go to state 135
-    LBRACKET   shift, and go to state 136
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 134
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 107
 
-   29 Init: IDList COLON Type • OptionalInit
-   30 ArrayType: Type • LBRACKET INT_LITERAL RBRACKET
-   32          | Type • LBRACKET RBRACKET
+   56 Expression: Expression LTE • Expression
 
-    EQUAL     shift, and go to state 137
-    LBRACKET  shift, and go to state 138
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    $default  reduce using rule 23 (OptionalInit)
-
-    OptionalInit  go to state 139
+    Expression          go to state 135
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 108
 
-   29 Init: IDList • COLON Type OptionalInit
+   54 Expression: Expression NOTEQUAL • Expression
 
-    COLON  shift, and go to state 140
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 136
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 109
 
-   28 InitList: Init COMMA InitList •
+   51 Expression: Expression OR • Expression
 
-    $default  reduce using rule 28 (InitList)
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 137
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 110
 
-   35 Statement: IDENTIFIER EQUAL Expression SEMICOLON •
+   45 Statement: IF LPAREN Expression RPAREN • Block
+   46          | IF LPAREN Expression RPAREN • Block ELSE Block
 
-    $default  reduce using rule 35 (Statement)
+    LBRACE  shift, and go to state 138
+
+    Block  go to state 139
 
 
 State 111
 
-   36 Statement: IDENTIFIER LBRACKET Expression RBRACKET • EQUAL Expression SEMICOLON
+   61 AdditiveExpr: AdditiveExpr MINUS • MultiplicativeExpr
 
-    EQUAL  shift, and go to state 141
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    MultiplicativeExpr  go to state 140
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 112
 
-   16 ReturnStatement: RETURN Expression SEMICOLON •
+   60 AdditiveExpr: AdditiveExpr PLUS • MultiplicativeExpr
 
-    $default  reduce using rule 16 (ReturnStatement)
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    MultiplicativeExpr  go to state 141
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 113
 
-   64 Variable: IDENTIFIER LBRACKET • Expression RBRACKET
+   64 MultiplicativeExpr: MultiplicativeExpr DIV • UnaryExpr
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    Expression          go to state 142
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    UnaryExpr    go to state 142
+    PrimaryExpr  go to state 80
 
 
 State 114
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
-   77 NonEmptyArgumentList: Expression •
-   78                     | Expression • COMMA NonEmptyArgumentList
+   63 MultiplicativeExpr: MultiplicativeExpr MUL • UnaryExpr
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    COMMA     shift, and go to state 143
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    $default  reduce using rule 77 (NonEmptyArgumentList)
+    UnaryExpr    go to state 143
+    PrimaryExpr  go to state 80
 
 
 State 115
 
-   68 PrimaryExpr: IDENTIFIER LPAREN ArgumentList • RPAREN
+   47 Statement: WHILE LPAREN Expression RPAREN • Block
 
-    RPAREN  shift, and go to state 144
+    LBRACE  shift, and go to state 138
+
+    Block  go to state 144
 
 
 State 116
 
-   76 ArgumentList: NonEmptyArgumentList •
+   29 Declaration: VAR IDList COLON ArrayType • SEMICOLON
+   39 ArrayType: ArrayType • LBRACKET INT_LITERAL RBRACKET
 
-    $default  reduce using rule 76 (ArgumentList)
+    SEMICOLON  shift, and go to state 145
+    LBRACKET   shift, and go to state 146
 
 
 State 117
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
-   69 PrimaryExpr: IDENTIFIER LBRACKET Expression • RBRACKET
+   37 Init: IDList COLON Type • OptionalInit
+   38 ArrayType: Type • LBRACKET INT_LITERAL RBRACKET
+   40          | Type • LBRACKET RBRACKET
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    RBRACKET  shift, and go to state 145
+    EQUAL     shift, and go to state 147
+    LBRACKET  shift, and go to state 148
+
+    $default  reduce using rule 31 (OptionalInit)
+
+    OptionalInit  go to state 149
 
 
 State 118
 
-   67 PrimaryExpr: LPAREN Expression RPAREN •
+   37 Init: IDList • COLON Type OptionalInit
 
-    $default  reduce using rule 67 (PrimaryExpr)
+    COLON  shift, and go to state 150
 
 
 State 119
 
-   61 UnaryExpr: BAR Expression BAR •
+   36 InitList: Init COMMA InitList •
 
-    $default  reduce using rule 61 (UnaryExpr)
+    $default  reduce using rule 36 (InitList)
 
 
 State 120
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   43           | Expression AND Expression •
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   43 Statement: IDENTIFIER EQUAL Expression SEMICOLON •
 
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-
-    $default  reduce using rule 43 (Expression)
+    $default  reduce using rule 43 (Statement)
 
 
 State 121
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   44           | Expression EQUALS Expression •
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   44 Statement: IDENTIFIER LBRACKET Expression RBRACKET • EQUAL Expression SEMICOLON
 
-    GT   shift, and go to state 94
-    GTE  shift, and go to state 95
-    LT   shift, and go to state 96
-    LTE  shift, and go to state 97
-
-    $default  reduce using rule 44 (Expression)
+    EQUAL  shift, and go to state 151
 
 
 State 122
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   48           | Expression GT Expression •
-   49           | Expression • GTE Expression
+   16 OptionalReturn: RETURN Expression SEMICOLON •
 
-    $default  reduce using rule 48 (Expression)
+    $default  reduce using rule 16 (OptionalReturn)
 
 
 State 123
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
-   49           | Expression GTE Expression •
+   73 Variable: IDENTIFIER LBRACKET • Expression RBRACKET
 
-    $default  reduce using rule 49 (Expression)
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 152
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 124
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   46           | Expression LT Expression •
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+   86 NonEmptyArgumentList: Expression •
+   87                     | Expression • COMMA NonEmptyArgumentList
 
-    $default  reduce using rule 46 (Expression)
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    COMMA     shift, and go to state 153
+
+    $default  reduce using rule 86 (NonEmptyArgumentList)
 
 
 State 125
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   47           | Expression LTE Expression •
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   77 PrimaryExpr: IDENTIFIER LPAREN ArgumentList • RPAREN
 
-    $default  reduce using rule 47 (Expression)
+    RPAREN  shift, and go to state 154
 
 
 State 126
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   45           | Expression NOTEQUAL Expression •
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   85 ArgumentList: NonEmptyArgumentList •
 
-    GT   shift, and go to state 94
-    GTE  shift, and go to state 95
-    LT   shift, and go to state 96
-    LTE  shift, and go to state 97
-
-    $default  reduce using rule 45 (Expression)
+    $default  reduce using rule 85 (ArgumentList)
 
 
 State 127
 
-   42 Expression: Expression • OR Expression
-   42           | Expression OR Expression •
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+   78 PrimaryExpr: IDENTIFIER LBRACKET Expression • RBRACKET
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-
-    $default  reduce using rule 42 (Expression)
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    RBRACKET  shift, and go to state 155
 
 
 State 128
 
-   17 Block: LBRACE • Declarations Statements RBRACE
+   76 PrimaryExpr: LPAREN Expression RPAREN •
 
-    VAR        shift, and go to state 31
-    PROCEDURE  shift, and go to state 1
-
-    PROCEDURE  [reduce using rule 18 (Declarations)]
-    $default   reduce using rule 18 (Declarations)
-
-    Procedure     go to state 53
-    Declarations  go to state 146
-    Declaration   go to state 37
+    $default  reduce using rule 76 (PrimaryExpr)
 
 
 State 129
 
-   37 Statement: IF LPAREN Expression RPAREN Block •
-   38          | IF LPAREN Expression RPAREN Block • ELSE Block
+   70 UnaryExpr: BAR Expression BAR •
 
-    ELSE  shift, and go to state 147
-
-    $default  reduce using rule 37 (Statement)
+    $default  reduce using rule 70 (UnaryExpr)
 
 
 State 130
 
-   52 AdditiveExpr: AdditiveExpr MINUS MultiplicativeExpr •
-   54 MultiplicativeExpr: MultiplicativeExpr • MUL UnaryExpr
-   55                   | MultiplicativeExpr • DIV UnaryExpr
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   52           | Expression AND Expression •
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    DIV  shift, and go to state 103
-    MUL  shift, and go to state 104
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
 
-    $default  reduce using rule 52 (AdditiveExpr)
+    $default  reduce using rule 52 (Expression)
 
 
 State 131
 
-   51 AdditiveExpr: AdditiveExpr PLUS MultiplicativeExpr •
-   54 MultiplicativeExpr: MultiplicativeExpr • MUL UnaryExpr
-   55                   | MultiplicativeExpr • DIV UnaryExpr
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   53           | Expression EQUALS Expression •
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    DIV  shift, and go to state 103
-    MUL  shift, and go to state 104
+    GT   shift, and go to state 104
+    GTE  shift, and go to state 105
+    LT   shift, and go to state 106
+    LTE  shift, and go to state 107
 
-    $default  reduce using rule 51 (AdditiveExpr)
+    $default  reduce using rule 53 (Expression)
 
 
 State 132
 
-   55 MultiplicativeExpr: MultiplicativeExpr DIV UnaryExpr •
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   57           | Expression GT Expression •
+   58           | Expression • GTE Expression
 
-    $default  reduce using rule 55 (MultiplicativeExpr)
+    $default  reduce using rule 57 (Expression)
 
 
 State 133
 
-   54 MultiplicativeExpr: MultiplicativeExpr MUL UnaryExpr •
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+   58           | Expression GTE Expression •
 
-    $default  reduce using rule 54 (MultiplicativeExpr)
+    $default  reduce using rule 58 (Expression)
 
 
 State 134
 
-   39 Statement: WHILE LPAREN Expression RPAREN Block •
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   55           | Expression LT Expression •
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    $default  reduce using rule 39 (Statement)
+    $default  reduce using rule 55 (Expression)
 
 
 State 135
 
-   21 Declaration: VAR IDList COLON ArrayType SEMICOLON •
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   56           | Expression LTE Expression •
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    $default  reduce using rule 21 (Declaration)
+    $default  reduce using rule 56 (Expression)
 
 
 State 136
 
-   31 ArrayType: ArrayType LBRACKET • INT_LITERAL RBRACKET
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   54           | Expression NOTEQUAL Expression •
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    INT_LITERAL  shift, and go to state 148
+    GT   shift, and go to state 104
+    GTE  shift, and go to state 105
+    LT   shift, and go to state 106
+    LTE  shift, and go to state 107
+
+    $default  reduce using rule 54 (Expression)
 
 
 State 137
 
-   24 OptionalInit: EQUAL • InitValues
+   51 Expression: Expression • OR Expression
+   51           | Expression OR Expression •
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
 
-    InitValues          go to state 149
-    Expression          go to state 150
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 51 (Expression)
 
 
 State 138
 
-   30 ArrayType: Type LBRACKET • INT_LITERAL RBRACKET
-   32          | Type LBRACKET • RBRACKET
+   17 Block: LBRACE • BlockContent RBRACE
 
-    INT_LITERAL  shift, and go to state 151
-    RBRACKET     shift, and go to state 152
+    IF          shift, and go to state 30
+    WHILE       shift, and go to state 31
+    VAR         shift, and go to state 32
+    PROCEDURE   shift, and go to state 1
+    IDENTIFIER  shift, and go to state 33
+    LBRACE      shift, and go to state 34
+
+    $default  reduce using rule 18 (BlockContent)
+
+    Procedure     go to state 35
+    BlockContent  go to state 156
+    BlockItems    go to state 50
+    BlockItem     go to state 51
+    NestedBlock   go to state 52
+    Declaration   go to state 53
+    Statement     go to state 89
 
 
 State 139
 
-   29 Init: IDList COLON Type OptionalInit •
+   45 Statement: IF LPAREN Expression RPAREN Block •
+   46          | IF LPAREN Expression RPAREN Block • ELSE Block
 
-    $default  reduce using rule 29 (Init)
+    ELSE  shift, and go to state 157
+
+    $default  reduce using rule 45 (Statement)
 
 
 State 140
 
-   29 Init: IDList COLON • Type OptionalInit
+   61 AdditiveExpr: AdditiveExpr MINUS MultiplicativeExpr •
+   63 MultiplicativeExpr: MultiplicativeExpr • MUL UnaryExpr
+   64                   | MultiplicativeExpr • DIV UnaryExpr
 
-    BOOLEAN  shift, and go to state 20
-    CHAR     shift, and go to state 21
-    INTEGER  shift, and go to state 22
-    STRING   shift, and go to state 23
-    INTPTR   shift, and go to state 24
-    CHARPTR  shift, and go to state 25
+    DIV  shift, and go to state 113
+    MUL  shift, and go to state 114
 
-    Type  go to state 153
+    $default  reduce using rule 61 (AdditiveExpr)
 
 
 State 141
 
-   36 Statement: IDENTIFIER LBRACKET Expression RBRACKET EQUAL • Expression SEMICOLON
+   60 AdditiveExpr: AdditiveExpr PLUS MultiplicativeExpr •
+   63 MultiplicativeExpr: MultiplicativeExpr • MUL UnaryExpr
+   64                   | MultiplicativeExpr • DIV UnaryExpr
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    DIV  shift, and go to state 113
+    MUL  shift, and go to state 114
 
-    Expression          go to state 154
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    $default  reduce using rule 60 (AdditiveExpr)
 
 
 State 142
 
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
-   64 Variable: IDENTIFIER LBRACKET Expression • RBRACKET
+   64 MultiplicativeExpr: MultiplicativeExpr DIV UnaryExpr •
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    RBRACKET  shift, and go to state 155
+    $default  reduce using rule 64 (MultiplicativeExpr)
 
 
 State 143
 
-   78 NonEmptyArgumentList: Expression COMMA • NonEmptyArgumentList
+   63 MultiplicativeExpr: MultiplicativeExpr MUL UnaryExpr •
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
-
-    Expression            go to state 114
-    AdditiveExpr          go to state 70
-    MultiplicativeExpr    go to state 71
-    UnaryExpr             go to state 72
-    PrimaryExpr           go to state 73
-    NonEmptyArgumentList  go to state 156
+    $default  reduce using rule 63 (MultiplicativeExpr)
 
 
 State 144
 
-   68 PrimaryExpr: IDENTIFIER LPAREN ArgumentList RPAREN •
+   47 Statement: WHILE LPAREN Expression RPAREN Block •
 
-    $default  reduce using rule 68 (PrimaryExpr)
+    $default  reduce using rule 47 (Statement)
 
 
 State 145
 
-   69 PrimaryExpr: IDENTIFIER LBRACKET Expression RBRACKET •
+   29 Declaration: VAR IDList COLON ArrayType SEMICOLON •
 
-    $default  reduce using rule 69 (PrimaryExpr)
+    $default  reduce using rule 29 (Declaration)
 
 
 State 146
 
-   17 Block: LBRACE Declarations • Statements RBRACE
+   39 ArrayType: ArrayType LBRACKET • INT_LITERAL RBRACKET
 
-    IF          shift, and go to state 29
-    WHILE       shift, and go to state 30
-    PROCEDURE   shift, and go to state 1
-    IDENTIFIER  shift, and go to state 32
-    LBRACE      shift, and go to state 33
-
-    $default  reduce using rule 33 (Statements)
-
-    Procedure   go to state 47
-    Statements  go to state 157
-    Statement   go to state 39
+    INT_LITERAL  shift, and go to state 158
 
 
 State 147
 
-   38 Statement: IF LPAREN Expression RPAREN Block ELSE • Block
+   32 OptionalInit: EQUAL • InitValues
 
-    LBRACE  shift, and go to state 128
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    Block  go to state 158
+    InitValues          go to state 159
+    Expression          go to state 160
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 148
 
-   31 ArrayType: ArrayType LBRACKET INT_LITERAL • RBRACKET
+   38 ArrayType: Type LBRACKET • INT_LITERAL RBRACKET
+   40          | Type LBRACKET • RBRACKET
 
-    RBRACKET  shift, and go to state 159
+    INT_LITERAL  shift, and go to state 161
+    RBRACKET     shift, and go to state 162
 
 
 State 149
 
-   24 OptionalInit: EQUAL InitValues •
+   37 Init: IDList COLON Type OptionalInit •
 
-    $default  reduce using rule 24 (OptionalInit)
+    $default  reduce using rule 37 (Init)
 
 
 State 150
 
-   25 InitValues: Expression •
-   26           | Expression • COMMA InitValues
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   37 Init: IDList COLON • Type OptionalInit
 
-    AND       shift, and go to state 92
-    EQUALS    shift, and go to state 93
-    GT        shift, and go to state 94
-    GTE       shift, and go to state 95
-    LT        shift, and go to state 96
-    LTE       shift, and go to state 97
-    NOTEQUAL  shift, and go to state 98
-    OR        shift, and go to state 99
-    COMMA     shift, and go to state 160
+    BOOLEAN  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    INTEGER  shift, and go to state 23
+    STRING   shift, and go to state 24
+    INTPTR   shift, and go to state 25
+    CHARPTR  shift, and go to state 26
 
-    COMMA     [reduce using rule 25 (InitValues)]
-    $default  reduce using rule 25 (InitValues)
+    Type  go to state 163
 
 
 State 151
 
-   30 ArrayType: Type LBRACKET INT_LITERAL • RBRACKET
+   44 Statement: IDENTIFIER LBRACKET Expression RBRACKET EQUAL • Expression SEMICOLON
 
-    RBRACKET  shift, and go to state 161
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    Expression          go to state 164
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
 
 
 State 152
 
-   32 ArrayType: Type LBRACKET RBRACKET •
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
+   73 Variable: IDENTIFIER LBRACKET Expression • RBRACKET
 
-    $default  reduce using rule 32 (ArrayType)
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    RBRACKET  shift, and go to state 165
 
 
 State 153
 
-   29 Init: IDList COLON Type • OptionalInit
+   87 NonEmptyArgumentList: Expression COMMA • NonEmptyArgumentList
 
-    EQUAL  shift, and go to state 137
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
 
-    $default  reduce using rule 23 (OptionalInit)
-
-    OptionalInit  go to state 139
+    Expression            go to state 124
+    AdditiveExpr          go to state 77
+    MultiplicativeExpr    go to state 78
+    UnaryExpr             go to state 79
+    PrimaryExpr           go to state 80
+    NonEmptyArgumentList  go to state 166
 
 
 State 154
 
-   36 Statement: IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression • SEMICOLON
-   42 Expression: Expression • OR Expression
-   43           | Expression • AND Expression
-   44           | Expression • EQUALS Expression
-   45           | Expression • NOTEQUAL Expression
-   46           | Expression • LT Expression
-   47           | Expression • LTE Expression
-   48           | Expression • GT Expression
-   49           | Expression • GTE Expression
+   77 PrimaryExpr: IDENTIFIER LPAREN ArgumentList RPAREN •
 
-    AND        shift, and go to state 92
-    EQUALS     shift, and go to state 93
-    GT         shift, and go to state 94
-    GTE        shift, and go to state 95
-    LT         shift, and go to state 96
-    LTE        shift, and go to state 97
-    NOTEQUAL   shift, and go to state 98
-    OR         shift, and go to state 99
-    SEMICOLON  shift, and go to state 162
+    $default  reduce using rule 77 (PrimaryExpr)
 
 
 State 155
 
-   64 Variable: IDENTIFIER LBRACKET Expression RBRACKET •
+   78 PrimaryExpr: IDENTIFIER LBRACKET Expression RBRACKET •
 
-    $default  reduce using rule 64 (Variable)
+    $default  reduce using rule 78 (PrimaryExpr)
 
 
 State 156
 
-   78 NonEmptyArgumentList: Expression COMMA NonEmptyArgumentList •
+   17 Block: LBRACE BlockContent • RBRACE
 
-    $default  reduce using rule 78 (NonEmptyArgumentList)
+    RBRACE  shift, and go to state 167
 
 
 State 157
 
-   17 Block: LBRACE Declarations Statements • RBRACE
+   46 Statement: IF LPAREN Expression RPAREN Block ELSE • Block
 
-    RBRACE  shift, and go to state 163
+    LBRACE  shift, and go to state 138
+
+    Block  go to state 168
 
 
 State 158
 
-   38 Statement: IF LPAREN Expression RPAREN Block ELSE Block •
+   39 ArrayType: ArrayType LBRACKET INT_LITERAL • RBRACKET
 
-    $default  reduce using rule 38 (Statement)
+    RBRACKET  shift, and go to state 169
 
 
 State 159
 
-   31 ArrayType: ArrayType LBRACKET INT_LITERAL RBRACKET •
+   32 OptionalInit: EQUAL InitValues •
 
-    $default  reduce using rule 31 (ArrayType)
+    $default  reduce using rule 32 (OptionalInit)
 
 
 State 160
 
-   26 InitValues: Expression COMMA • InitValues
+   33 InitValues: Expression •
+   34           | Expression • COMMA InitValues
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    NULLTOKEN       shift, and go to state 56
-    MINUS           shift, and go to state 57
-    NOT             shift, and go to state 58
-    AMP             shift, and go to state 59
-    DEREFERENCE     shift, and go to state 60
-    TRUE            shift, and go to state 61
-    FALSE           shift, and go to state 62
-    INT_LITERAL     shift, and go to state 63
-    IDENTIFIER      shift, and go to state 64
-    LPAREN          shift, and go to state 65
-    BAR             shift, and go to state 66
-    STRING_LITERAL  shift, and go to state 67
-    CHAR_LITERAL    shift, and go to state 68
+    AND       shift, and go to state 102
+    EQUALS    shift, and go to state 103
+    GT        shift, and go to state 104
+    GTE       shift, and go to state 105
+    LT        shift, and go to state 106
+    LTE       shift, and go to state 107
+    NOTEQUAL  shift, and go to state 108
+    OR        shift, and go to state 109
+    COMMA     shift, and go to state 170
 
-    InitValues          go to state 164
-    Expression          go to state 150
-    AdditiveExpr        go to state 70
-    MultiplicativeExpr  go to state 71
-    UnaryExpr           go to state 72
-    PrimaryExpr         go to state 73
+    COMMA     [reduce using rule 33 (InitValues)]
+    $default  reduce using rule 33 (InitValues)
 
 
 State 161
 
-   30 ArrayType: Type LBRACKET INT_LITERAL RBRACKET •
+   38 ArrayType: Type LBRACKET INT_LITERAL • RBRACKET
 
-    $default  reduce using rule 30 (ArrayType)
+    RBRACKET  shift, and go to state 171
 
 
 State 162
 
-   36 Statement: IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON •
+   40 ArrayType: Type LBRACKET RBRACKET •
 
-    $default  reduce using rule 36 (Statement)
+    $default  reduce using rule 40 (ArrayType)
 
 
 State 163
 
-   17 Block: LBRACE Declarations Statements RBRACE •
+   37 Init: IDList COLON Type • OptionalInit
 
-    $default  reduce using rule 17 (Block)
+    EQUAL  shift, and go to state 147
+
+    $default  reduce using rule 31 (OptionalInit)
+
+    OptionalInit  go to state 149
 
 
 State 164
 
-   26 InitValues: Expression COMMA InitValues •
+   44 Statement: IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression • SEMICOLON
+   51 Expression: Expression • OR Expression
+   52           | Expression • AND Expression
+   53           | Expression • EQUALS Expression
+   54           | Expression • NOTEQUAL Expression
+   55           | Expression • LT Expression
+   56           | Expression • LTE Expression
+   57           | Expression • GT Expression
+   58           | Expression • GTE Expression
 
-    $default  reduce using rule 26 (InitValues)
+    AND        shift, and go to state 102
+    EQUALS     shift, and go to state 103
+    GT         shift, and go to state 104
+    GTE        shift, and go to state 105
+    LT         shift, and go to state 106
+    LTE        shift, and go to state 107
+    NOTEQUAL   shift, and go to state 108
+    OR         shift, and go to state 109
+    SEMICOLON  shift, and go to state 172
+
+
+State 165
+
+   73 Variable: IDENTIFIER LBRACKET Expression RBRACKET •
+
+    $default  reduce using rule 73 (Variable)
+
+
+State 166
+
+   87 NonEmptyArgumentList: Expression COMMA NonEmptyArgumentList •
+
+    $default  reduce using rule 87 (NonEmptyArgumentList)
+
+
+State 167
+
+   17 Block: LBRACE BlockContent RBRACE •
+
+    $default  reduce using rule 17 (Block)
+
+
+State 168
+
+   46 Statement: IF LPAREN Expression RPAREN Block ELSE Block •
+
+    $default  reduce using rule 46 (Statement)
+
+
+State 169
+
+   39 ArrayType: ArrayType LBRACKET INT_LITERAL RBRACKET •
+
+    $default  reduce using rule 39 (ArrayType)
+
+
+State 170
+
+   34 InitValues: Expression COMMA • InitValues
+
+    NULLTOKEN       shift, and go to state 63
+    MINUS           shift, and go to state 64
+    NOT             shift, and go to state 65
+    AMP             shift, and go to state 66
+    DEREFERENCE     shift, and go to state 67
+    TRUE            shift, and go to state 68
+    FALSE           shift, and go to state 69
+    INT_LITERAL     shift, and go to state 70
+    IDENTIFIER      shift, and go to state 71
+    LPAREN          shift, and go to state 72
+    BAR             shift, and go to state 73
+    STRING_LITERAL  shift, and go to state 74
+    CHAR_LITERAL    shift, and go to state 75
+
+    InitValues          go to state 173
+    Expression          go to state 160
+    AdditiveExpr        go to state 77
+    MultiplicativeExpr  go to state 78
+    UnaryExpr           go to state 79
+    PrimaryExpr         go to state 80
+
+
+State 171
+
+   38 ArrayType: Type LBRACKET INT_LITERAL RBRACKET •
+
+    $default  reduce using rule 38 (ArrayType)
+
+
+State 172
+
+   44 Statement: IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON •
+
+    $default  reduce using rule 44 (Statement)
+
+
+State 173
+
+   34 InitValues: Expression COMMA InitValues •
+
+    $default  reduce using rule 34 (InitValues)

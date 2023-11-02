@@ -53,17 +53,21 @@ Procedure : PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE 
           ;
 
     
-ParameterList : /* empty */
-              | Param
-              | Param COMMA ParameterList
+ParameterList : ParamList
               ;
 
+ParamList : Param
+          | Param SEMICOLON ParamList
+          ;
+
 Param : IDList COLON Type
+      |
       ;
 
 IDList : IDENTIFIER
        | IDENTIFIER COMMA IDList
        ;
+
 
 Body : Declarations
      | Statements
@@ -71,23 +75,31 @@ Body : Declarations
      ;
 
 OptionalReturn : /* empty */
-               | ReturnStatement
+               | RETURN Expression SEMICOLON
                ;
 
 
-ReturnStatement : RETURN Expression SEMICOLON
-                ;
+Block : LBRACE BlockContent RBRACE ;
 
-Block : LBRACE Declarations Statements RBRACE 
-      /* | LBRACE Block RBRACE  */
-      /* |  */
-      ;
+BlockContent :
+              | BlockItems
+              ;
 
+BlockItems : BlockItem
+           | BlockItem BlockItems
+           ;
+
+BlockItem : Declaration
+          | Statement
+          | NestedBlock
+          ;
+
+NestedBlock : LBRACE BlockContent RBRACE
+            ;
 
 Declarations : 
              | Declaration Declarations
              ;
-
 
 Declaration : VAR InitList SEMICOLON
             | VAR IDList COLON ArrayType SEMICOLON
@@ -124,6 +136,7 @@ Statement : IDENTIFIER EQUAL Expression SEMICOLON
           | IF LPAREN Expression RPAREN Block ELSE Block
           | WHILE LPAREN Expression RPAREN Block
           | LBRACE Statements RBRACE
+          | NestedBlock
           | Procedure
           ;
 
