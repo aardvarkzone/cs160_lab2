@@ -4,7 +4,9 @@ procedure foo(i, j, k : integer) return integer
     var b : boolean;
     var x : integer;
     var p : integer;
-
+    var stringTest: string[0x00];
+    a = foo("string");
+    procedure foo(i : integer) return integer {}
     a = 3 || 2;
     a = (3 + 2) / 3 - 5 * 2;
     b = true && false || false;
@@ -18,6 +20,9 @@ procedure foo(i, j, k : integer) return integer
     b = !false;
     x = 07234;
     c = 0111b;
+
+   
+
 
     return 0;
 }

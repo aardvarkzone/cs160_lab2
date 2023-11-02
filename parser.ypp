@@ -103,23 +103,16 @@ Declaration : VAR SingleVarDeclaration SEMICOLON
             | Procedure
             ;
 
-SingleVarDeclaration : IDENTIFIER COLON Type OptionalArraySize OptionalInit
+SingleVarDeclaration : IDENTIFIER COLON STRING LBRACKET INT_LITERAL RBRACKET
+                     | IDENTIFIER COLON Type 
                      ;
 
-MultiVarDeclaration : IDList COLON Type OptionalInit
+MultiVarDeclaration : IDList COLON Type 
                     ;
 
-OptionalArraySize : 
-                  | LBRACKET INT_LITERAL RBRACKET
-                  ;
-
-OptionalInit : 
-             | EQUAL InitValues
-             ;
-
-InitValues : Expression
+/* InitValues : Expression
            | Expression COMMA InitValues
-           ;
+           ; */
 
 Statements : Statement
            | Statement Statements
@@ -191,7 +184,6 @@ NonEmptyArgumentList : Expression
 Type : BOOLEAN
      | CHAR
      | INTEGER
-     | STRING
      | INTPTR
      | CHARPTR
      ;
