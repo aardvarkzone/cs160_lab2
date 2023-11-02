@@ -78,6 +78,7 @@ CHAR_LITERAL     \'[^\']\'
 "]"             { return RBRACKET; }
 ","             { return COMMA; }
 ":"             { return COLON; }
+"|"             { return BAR; }
 {HEX}           { return INT_LITERAL; }
 {OCTAL}         { return INT_LITERAL; }
 {BINARY}        { return INT_LITERAL; }

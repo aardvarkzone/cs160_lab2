@@ -21,7 +21,7 @@
 %token DIV EQUAL EQUALS GT GTE LT LTE MINUS NOT 
 %token NOTEQUAL OR PLUS MUL AMP XOR TRUE FALSE 
 %token INT_LITERAL IDENTIFIER COMMA COLON UMINUS
-%token LBRACE RBRACE SEMICOLON LPAREN RPAREN 
+%token LBRACE RBRACE SEMICOLON LPAREN RPAREN BAR
 %token LBRACKET RBRACKET STRING_LITERAL CHAR_LITERAL
 
 %left OR
@@ -61,8 +61,9 @@ ProcedureList : Procedure
               | Procedure ProcedureList
               ;
 
-Procedure : PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body RBRACE
+Procedure : PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE
           ;
+
     
 ParameterList : /* empty */
               | Param
@@ -81,14 +82,47 @@ Body : Declarations
      | Declarations Statements
      ;
 
+OptionalReturn : /* empty */
+               | ReturnStatement
+               ;
+
+
+ReturnStatement : RETURN Expression SEMICOLON
+                ;
+
 Declarations : Declaration
              | Declaration Declarations
              ;
 
-Declaration : VAR IDList COLON Type SEMICOLON
+/* Declaration : VAR IDList COLON Type SEMICOLON
+            | VAR IDList COLON ArrayType SEMICOLON
+            | Procedure
+            ; */
+
+/* Declaration : VAR IDList COLON Type OptionalInit SEMICOLON
+            | VAR IDList COLON ArrayType SEMICOLON
+            | Procedure
+            ; */
+
+Declaration : VAR InitList SEMICOLON
             | VAR IDList COLON ArrayType SEMICOLON
             | Procedure
             ;
+
+OptionalInit : /* empty */
+             | EQUAL InitValues
+             ;
+
+InitValues : Expression
+           | Expression COMMA InitValues
+           ;
+
+InitList : Init
+         | Init COMMA InitList
+         ;
+
+Init : IDList COLON Type OptionalInit
+     ;
 
 ArrayType : Type LBRACKET INT_LITERAL RBRACKET
           | ArrayType LBRACKET INT_LITERAL RBRACKET 
@@ -101,12 +135,19 @@ Statements : Statement
 
 Statement : IDENTIFIER EQUAL Expression SEMICOLON
           | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON // For array assignment
-          | IF LPAREN Expression RPAREN LBRACE Statements RBRACE
-          | IF LPAREN Expression RPAREN LBRACE Statements RBRACE ELSE LBRACE Statements RBRACE
-          | WHILE LPAREN Expression RPAREN LBRACE Statements RBRACE
+          | IF LPAREN Expression RPAREN LBRACE StatementOrDeclaration RBRACE
+          | IF LPAREN Expression RPAREN LBRACE StatementOrDeclaration RBRACE ELSE LBRACE StatementOrDeclaration RBRACE
+          | WHILE LPAREN Expression RPAREN LBRACE StatementOrDeclaration RBRACE
           | RETURN Expression SEMICOLON
           | Procedure
           ;
+
+StatementOrDeclaration : Statement
+                       | Declaration
+                       | StatementOrDeclaration Statement
+                       | StatementOrDeclaration Declaration
+                       |
+                       ;
 
 Expression : Expression OR Expression
            | Expression AND Expression
@@ -136,8 +177,12 @@ BitwiseExpr : BitwiseExpr XOR UnaryExpr
 UnaryExpr : NOT UnaryExpr
           | MINUS UnaryExpr %prec UMINUS
           | AMP UnaryExpr
+          | AbsExpr
           | PrimaryExpr
           ;
+
+AbsExpr : BAR Expression BAR
+        ;
 
 PrimaryExpr : IDENTIFIER
             | INT_LITERAL
