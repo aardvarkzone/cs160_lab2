@@ -1,2 +1,23 @@
-procedure foo(i, j, k : integer; l, m, n : boolean) return integer { return 0; }
-procedure foo() return integer { return 0; }
+procedure foo(i, j, k : integer) return integer
+{
+    var a : integer;
+    var b : boolean;
+    var x : integer;
+    var p : integer;
+
+    a = 3 || 2;
+    a = (3 + 2) / 3 - 5 * 2;
+    b = true && false || false;
+    a = 5;
+    a = 0x012;
+    b = true;
+    a = -5;
+    x = ^x;
+    p = 5;
+    x = ^(p+5);
+    b = !false;
+    x = 07234;
+    c = 0111b;
+
+    return 0;
+}

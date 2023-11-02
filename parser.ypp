@@ -69,44 +69,51 @@ IDList : IDENTIFIER
        ;
 
 
-Body : Declarations
+/* Body : Declarations
      | Statements
      | Declarations Statements
+     ; */
+Body : OptionalDeclarations OptionalStatements
      ;
 
-OptionalReturn : /* empty */
+OptionalDeclarations : 
+                     | Declarations
+                     ;
+
+OptionalStatements :
+                   | Statements
+                   ;
+
+OptionalReturn : 
                | RETURN Expression SEMICOLON
                ;
 
 
-Block : LBRACE BlockContent RBRACE ;
+Block : LBRACE OptionalDeclarations OptionalStatements RBRACE ;
 
-BlockContent :
-              | BlockItems
-              ;
-
-BlockItems : BlockItem
-           | BlockItem BlockItems
-           ;
-
-BlockItem : Declaration
-          | Statement
-          | NestedBlock
-          ;
-
-NestedBlock : LBRACE BlockContent RBRACE
+NestedBlock : LBRACE OptionalDeclarations OptionalStatements RBRACE
             ;
 
-Declarations : 
+Declarations : Declaration
              | Declaration Declarations
              ;
 
-Declaration : VAR InitList SEMICOLON
-            | VAR IDList COLON ArrayType SEMICOLON
+Declaration : VAR SingleVarDeclaration SEMICOLON
+            | VAR MultiVarDeclaration SEMICOLON
             | Procedure
             ;
 
-OptionalInit : /* empty */
+SingleVarDeclaration : IDENTIFIER COLON Type OptionalArraySize OptionalInit
+                     ;
+
+MultiVarDeclaration : IDList COLON Type OptionalInit
+                    ;
+
+OptionalArraySize : 
+                  | LBRACKET INT_LITERAL RBRACKET
+                  ;
+
+OptionalInit : 
              | EQUAL InitValues
              ;
 
@@ -114,19 +121,7 @@ InitValues : Expression
            | Expression COMMA InitValues
            ;
 
-InitList : Init
-         | Init COMMA InitList
-         ;
-
-Init : IDList COLON Type OptionalInit
-     ;
-
-ArrayType : Type LBRACKET INT_LITERAL RBRACKET
-          | ArrayType LBRACKET INT_LITERAL RBRACKET 
-          | Type LBRACKET RBRACKET
-          ;
-
-Statements : 
+Statements : Statement
            | Statement Statements
            ;
 
@@ -185,7 +180,7 @@ PrimaryExpr : IDENTIFIER
             | NULLTOKEN 
             ;
 
-ArgumentList : // For no arguments
+ArgumentList : 
              | NonEmptyArgumentList 
              ;
 

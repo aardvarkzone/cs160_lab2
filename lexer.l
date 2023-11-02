@@ -19,7 +19,7 @@ DIGIT       [0-9]
 ALPHA       [a-zA-Z]
 IDENTIFIER  {ALPHA}({ALPHA}|{DIGIT}|_)*
 DECIMAL     [0-9]{DIGIT}*
-HEX         0[xX][DIGITa-fA-F]+
+HEX         0[xX][0-9a-fA-F]+
 OCTAL       0[0-7]+
 BINARY      [01]+[bB]
 STRING_LITERAL    \"[^\"]*\"
