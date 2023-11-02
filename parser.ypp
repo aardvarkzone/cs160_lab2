@@ -1,0 +1,182 @@
+%{
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define YYDEBUG 1
+
+    int yylex(void);
+    void yyerror(const char *);
+%}
+
+/* Enables verbose error messages */
+/* %error-verbose */
+%define parse.error verbose
+/** WRITE ME:
+ *  - Put all your token definitions here
+ *  - Put all your type definitions here
+ *  - Put all your precedence/associativity rules here
+ */
+
+%token BOOLEAN CHAR INTEGER STRING INTPTR CHARPTR 
+%token IF ELSE WHILE VAR PROCEDURE RETURN NULLTOKEN AND 
+%token DIV EQUAL EQUALS GT GTE LT LTE MINUS NOT 
+%token NOTEQUAL OR PLUS MUL AMP XOR TRUE FALSE 
+%token INT_LITERAL IDENTIFIER COMMA COLON UMINUS
+%token LBRACE RBRACE SEMICOLON LPAREN RPAREN 
+%token LBRACKET RBRACKET STRING_LITERAL CHAR_LITERAL
+
+%left OR
+%left AND
+%left EQUALS NOTEQUAL
+%left LT LTE GT GTE
+%left PLUS MINUS
+%left MUL DIV
+%left XOR
+%right NOT
+%precedence UMINUS
+
+%%
+
+/** WRITE ME:
+ *  This is the language from Project 1. You need to put the productions for
+ *  the grammar for the language for this project here.
+ */
+
+/* List    : List Expr '.' {printf("parsed expresion\n");}
+        | Expr '.' {printf("parsed expresion\n");}
+        ;
+
+Expr    : Expr '+' Expr 
+        | Expr '-' Expr 
+        | Expr '*' Expr
+        | 'n'
+        | '-' Expr  
+        | '(' Expr ')'
+        | '|' Expr '|'
+        ; */
+
+Program : ProcedureList
+        ;
+
+ProcedureList : Procedure
+              | Procedure ProcedureList
+              ;
+
+Procedure : PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body RBRACE
+          ;
+    
+ParameterList : /* empty */
+              | Param
+              | Param COMMA ParameterList
+              ;
+
+Param : IDList COLON Type
+      ;
+
+IDList : IDENTIFIER
+       | IDENTIFIER COMMA IDList
+       ;
+
+Body : Declarations
+     | Statements
+     | Declarations Statements
+     ;
+
+Declarations : Declaration
+             | Declaration Declarations
+             ;
+
+Declaration : VAR IDList COLON Type SEMICOLON
+            | VAR IDList COLON ArrayType SEMICOLON
+            | Procedure
+            ;
+
+ArrayType : Type LBRACKET INT_LITERAL RBRACKET
+          | ArrayType LBRACKET INT_LITERAL RBRACKET 
+          | Type LBRACKET RBRACKET
+          ;
+
+Statements : Statement
+           | Statement Statements
+           ;
+
+Statement : IDENTIFIER EQUAL Expression SEMICOLON
+          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON // For array assignment
+          | IF LPAREN Expression RPAREN LBRACE Statements RBRACE
+          | IF LPAREN Expression RPAREN LBRACE Statements RBRACE ELSE LBRACE Statements RBRACE
+          | WHILE LPAREN Expression RPAREN LBRACE Statements RBRACE
+          | RETURN Expression SEMICOLON
+          | Procedure
+          ;
+
+Expression : Expression OR Expression
+           | Expression AND Expression
+           | Expression EQUALS Expression
+           | Expression NOTEQUAL Expression
+           | Expression LT Expression
+           | Expression LTE Expression
+           | Expression GT Expression
+           | Expression GTE Expression
+           | AdditiveExpr
+           ;
+
+AdditiveExpr : AdditiveExpr PLUS MultiplicativeExpr
+             | AdditiveExpr MINUS MultiplicativeExpr
+             | MultiplicativeExpr
+             ;
+
+MultiplicativeExpr : MultiplicativeExpr MUL BitwiseExpr
+                   | MultiplicativeExpr DIV BitwiseExpr
+                   | BitwiseExpr
+                   ;
+
+BitwiseExpr : BitwiseExpr XOR UnaryExpr
+            | UnaryExpr
+            ;
+
+UnaryExpr : NOT UnaryExpr
+          | MINUS UnaryExpr %prec UMINUS
+          | AMP UnaryExpr
+          | PrimaryExpr
+          ;
+
+PrimaryExpr : IDENTIFIER
+            | INT_LITERAL
+            | LPAREN Expression RPAREN
+            | IDENTIFIER LPAREN ArgumentList RPAREN 
+            | IDENTIFIER LBRACKET Expression RBRACKET 
+            | STRING_LITERAL 
+            | CHAR_LITERAL 
+            | TRUE 
+            | FALSE 
+            | NULLTOKEN 
+            ;
+
+ArgumentList : // For no arguments
+             | NonEmptyArgumentList 
+             ;
+
+NonEmptyArgumentList : Expression 
+                     | Expression COMMA NonEmptyArgumentList 
+                     ;
+
+Type : BOOLEAN
+     | CHAR
+     | INTEGER
+     | STRING
+     | INTPTR
+     | CHARPTR
+     ;
+
+%%
+
+/** You shall not pass!
+ *  You should not  have to do or edit anything past this.
+ */
+
+extern int yylineno;
+
+void yyerror(const char *s)
+{
+    fprintf(stderr, "%s at line %d\n", s, yylineno);
+    exit(1);
+}

@@ -1,0 +1,5 @@
+procedure myProcedure() return integer {
+    return 4;
+}
+
+
