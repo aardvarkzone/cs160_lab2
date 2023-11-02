@@ -108,6 +108,7 @@ SingleVarDeclaration : IDENTIFIER COLON STRING LBRACKET INT_LITERAL RBRACKET
                      ;
 
 MultiVarDeclaration : IDList COLON Type 
+                    | IDList COLON STRING LBRACKET INT_LITERAL RBRACKET
                     ;
 
 /* InitValues : Expression
@@ -119,6 +120,7 @@ Statements : Statement
            ;
 
 Statement : IDENTIFIER EQUAL Expression SEMICOLON
+          | IDENTIFIER EQUAL STRING_LITERAL SEMICOLON
           | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON 
           | IF LPAREN Expression RPAREN Block
           | IF LPAREN Expression RPAREN Block ELSE Block
@@ -153,6 +155,7 @@ UnaryExpr : NOT UnaryExpr
           | MINUS UnaryExpr %prec UMINUS
           | AMP Variable    
           | DEREFERENCE PrimaryExpr 
+          | DEREFERENCE STRING LBRACKET INT_LITERAL RBRACKET
           | BAR Expression BAR
           | PrimaryExpr
           ;
@@ -166,7 +169,7 @@ PrimaryExpr : IDENTIFIER
             | LPAREN Expression RPAREN
             | IDENTIFIER LPAREN ArgumentList RPAREN 
             | IDENTIFIER LBRACKET Expression RBRACKET 
-            | STRING_LITERAL 
+            /* | STRING_LITERAL  */
             | CHAR_LITERAL 
             | TRUE 
             | FALSE 
