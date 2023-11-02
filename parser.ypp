@@ -41,19 +41,6 @@
  *  the grammar for the language for this project here.
  */
 
-/* List    : List Expr '.' {printf("parsed expresion\n");}
-        | Expr '.' {printf("parsed expresion\n");}
-        ;
-
-Expr    : Expr '+' Expr 
-        | Expr '-' Expr 
-        | Expr '*' Expr
-        | 'n'
-        | '-' Expr  
-        | '(' Expr ')'
-        | '|' Expr '|'
-        ; */
-
 Program : ProcedureList
         ;
 
@@ -90,19 +77,16 @@ OptionalReturn : /* empty */
 ReturnStatement : RETURN Expression SEMICOLON
                 ;
 
-Declarations : Declaration
+Block : LBRACE Declarations Statements RBRACE 
+      /* | LBRACE Block RBRACE  */
+      /* |  */
+      ;
+
+
+Declarations : 
              | Declaration Declarations
              ;
 
-/* Declaration : VAR IDList COLON Type SEMICOLON
-            | VAR IDList COLON ArrayType SEMICOLON
-            | Procedure
-            ; */
-
-/* Declaration : VAR IDList COLON Type OptionalInit SEMICOLON
-            | VAR IDList COLON ArrayType SEMICOLON
-            | Procedure
-            ; */
 
 Declaration : VAR InitList SEMICOLON
             | VAR IDList COLON ArrayType SEMICOLON
@@ -129,25 +113,18 @@ ArrayType : Type LBRACKET INT_LITERAL RBRACKET
           | Type LBRACKET RBRACKET
           ;
 
-Statements : Statement
+Statements : 
            | Statement Statements
            ;
 
 Statement : IDENTIFIER EQUAL Expression SEMICOLON
-          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON // For array assignment
-          | IF LPAREN Expression RPAREN LBRACE StatementOrDeclaration RBRACE
-          | IF LPAREN Expression RPAREN LBRACE StatementOrDeclaration RBRACE ELSE LBRACE StatementOrDeclaration RBRACE
-          | WHILE LPAREN Expression RPAREN LBRACE StatementOrDeclaration RBRACE
-          | RETURN Expression SEMICOLON
+          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON 
+          | IF LPAREN Expression RPAREN Block
+          | IF LPAREN Expression RPAREN Block ELSE Block
+          | WHILE LPAREN Expression RPAREN Block
+          | LBRACE Statements RBRACE
           | Procedure
           ;
-
-StatementOrDeclaration : Statement
-                       | Declaration
-                       | StatementOrDeclaration Statement
-                       | StatementOrDeclaration Declaration
-                       |
-                       ;
 
 Expression : Expression OR Expression
            | Expression AND Expression
