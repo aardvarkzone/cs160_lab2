@@ -64,9 +64,16 @@ IDList : IDENTIFIER
        | IDENTIFIER COMMA IDList
        ;
 
-Body : OptionalDeclarations OptionalStatements
+Body : OptionalProcedures OptionalDeclarations OptionalStatements
      ;
 
+OptionalProcedures :
+                   | NestedProcedures
+                   ;
+
+NestedProcedures : Procedure
+                 | Procedure NestedProcedures
+                 ;
 OptionalDeclarations : 
                      | Declarations
                      ;
@@ -84,14 +91,13 @@ Block : LBRACE OptionalDeclarations OptionalStatements RBRACE
       ;
 
 
-Declarations : Declaration
-             | Declaration Declarations
+Declarations : VarDeclaration
+             | VarDeclaration Declarations
              ;
 
-Declaration : VAR SingleVarDeclaration SEMICOLON
-            | VAR MultiVarDeclaration SEMICOLON
-            | Procedure
-            ;
+VarDeclaration : VAR SingleVarDeclaration SEMICOLON
+               | VAR MultiVarDeclaration SEMICOLON
+               ;
 
 SingleVarDeclaration : IDENTIFIER COLON STRING LBRACKET INT_LITERAL RBRACKET
                      | IDENTIFIER COLON Type 
@@ -115,7 +121,6 @@ Statement : IDENTIFIER EQUAL Expression SEMICOLON
           | WHILE LPAREN Expression RPAREN Block
           | LBRACE Statements RBRACE
           | Block OptionalStatements
-          | Procedure
           ;
 
 Expression : Expression OR Expression
@@ -158,7 +163,6 @@ PrimaryExpr : IDENTIFIER
             | LPAREN Expression RPAREN
             | IDENTIFIER LPAREN ArgumentList RPAREN 
             | IDENTIFIER LBRACKET Expression RBRACKET 
-            /* | STRING_LITERAL  */
             | CHAR_LITERAL 
             | TRUE 
             | FALSE 
@@ -166,8 +170,6 @@ PrimaryExpr : IDENTIFIER
             ;
 
 ArgumentList : 
-             /* | Values 
-             | Values COMMA ArgumentList  */
              | Expression 
              | Expression COMMA ArgumentList
              ;

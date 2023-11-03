@@ -1,46 +1,29 @@
-procedure foo(i, j, k : integer ; i, j, k : charptr) return integer
+procedure foo(i, j, k : integer) return integer
 {
     
-    var a : integer;
-    var b : boolean;
-    var x : integer;
-    var p : integer;
-        var stringTest: string[100];
-
-    {var test2: string[100];}
     
-    y = &x;     
-    x = &y[5]; 
-    z = ^(x - 5);
-    {{{}}
-    a = 3 || 2;
-    a = (3 + 2) / 3 - 5 * 2;
-    b = true && false || false;
-   { a = 5;
-    a = 0x012;
-    b = true;
-    a = -5;
-    x = ^x;
-    p = 5;
-    x = ^(p+5);}
     
-    b = !false;
-    x = 07234;
-    c = 0111b;
-   
-    a = fee();
-    a = fee(1);
-    
-    a = foo(1 + 1); 
-    a = foo(&y[5]); 
+    procedure square(t : integer) /% procedure declarations %/ return integer
+    {
+        var temp : integer;
+        temp = t* t;
+        return 0;
+    }
 
+    var total : integer;          /% variable declarations %/
 
-    a[19] = 'f';
-    a[19] = "f";}
-return 0;
+    total = 1;                    /% statements %/
+    return 0;
 }
 
-procedure foo(i, j, a : charptr) return integer
-{}
+procedure foo(i, j, k : integer) return integer
+{
+    procedure fee(l, m, n : integer) return boolean
+    {
+        return true;
+    }
+    a = max(1 - min(x, y), z);
 
-procedure fee() return integer {}
+
+    return 0;
+}
