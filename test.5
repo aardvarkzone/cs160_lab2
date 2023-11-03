@@ -1,4 +1,4 @@
-procedure foo(i, j, k : integer) return integer
+procedure foo(i, j, k : integer ; i, j, k : charptr) return integer
 {
     
     var a : integer;
@@ -9,7 +9,9 @@ procedure foo(i, j, k : integer) return integer
 
     {var test2: string[100];}
     
-    
+    y = &x;     
+    x = &y[5]; 
+    z = ^(x - 5);
     {{{}}
     a = 3 || 2;
     a = (3 + 2) / 3 - 5 * 2;
@@ -26,14 +28,19 @@ procedure foo(i, j, k : integer) return integer
     x = 07234;
     c = 0111b;
    
-    a = foo(1, 'a', 1);
+    a = fee();
+    a = fee(1);
+    
+    a = foo(1 + 1); 
+    a = foo(&y[5]); 
 
 
     a[19] = 'f';
     a[19] = "f";}
 return 0;
-
-    
-
-
 }
+
+procedure foo(i, j, a : charptr) return integer
+{}
+
+procedure fee() return integer {}

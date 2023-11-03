@@ -52,12 +52,12 @@ ProcedureList : Procedure
 Procedure : PROCEDURE IDENTIFIER LPAREN ParamList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE
           ;
 
-ParamList : Param
-          | Param SEMICOLON ParamList
+ParamList : 
+          | Param
+          | ParamList SEMICOLON Param
           ;
 
 Param : IDList COLON Type
-      |
       ;
 
 IDList : IDENTIFIER
@@ -108,6 +108,8 @@ Statements : Statement
 Statement : IDENTIFIER EQUAL Expression SEMICOLON
           | IDENTIFIER EQUAL STRING_LITERAL SEMICOLON
           | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON 
+          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL STRING_LITERAL SEMICOLON
+          /* remove for hw3 ^ */
           | IF LPAREN Expression RPAREN Block
           | IF LPAREN Expression RPAREN Block ELSE Block
           | WHILE LPAREN Expression RPAREN Block
@@ -140,8 +142,9 @@ MultiplicativeExpr : MultiplicativeExpr MUL UnaryExpr
 UnaryExpr : NOT UnaryExpr
           | MINUS UnaryExpr %prec UMINUS
           | AMP Variable    
-          | DEREFERENCE PrimaryExpr 
-          | DEREFERENCE STRING LBRACKET INT_LITERAL RBRACKET
+          | DEREFERENCE IDENTIFIER 
+          | DEREFERENCE Expression 
+          | DEREFERENCE IDENTIFIER LBRACKET INT_LITERAL RBRACKET
           | BAR Expression BAR
           | PrimaryExpr
           ;
@@ -155,7 +158,7 @@ PrimaryExpr : IDENTIFIER
             | LPAREN Expression RPAREN
             | IDENTIFIER LPAREN ArgumentList RPAREN 
             | IDENTIFIER LBRACKET Expression RBRACKET 
-            | STRING_LITERAL 
+            /* | STRING_LITERAL  */
             | CHAR_LITERAL 
             | TRUE 
             | FALSE 
@@ -163,12 +166,11 @@ PrimaryExpr : IDENTIFIER
             ;
 
 ArgumentList : 
-             | NonEmptyArgumentList 
+             /* | Values 
+             | Values COMMA ArgumentList  */
+             | Expression 
+             | Expression COMMA ArgumentList
              ;
-
-NonEmptyArgumentList : Values 
-                     | Values COMMA NonEmptyArgumentList 
-                     ;
 
 Type : BOOLEAN
      | CHAR
@@ -177,12 +179,7 @@ Type : BOOLEAN
      | CHARPTR
      ;
 
-Values : INT_LITERAL
-       | CHAR_LITERAL
-       | BOOLEAN 
-       | CHARPTR
-       | INTPTR
-       | IDENTIFIER
+
 
 %%
 
