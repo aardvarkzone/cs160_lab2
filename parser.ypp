@@ -170,9 +170,54 @@ PrimaryExpr : IDENTIFIER
             ;
 
 ArgumentList : 
-             | Expression 
-             | Expression COMMA ArgumentList
+             | ExpressionArg 
+             | ExpressionArg COMMA ArgumentList
              ;
+
+ExpressionArg : ExpressionArg OR ExpressionArg
+              | ExpressionArg AND ExpressionArg
+              | ExpressionArg EQUALS ExpressionArg
+              | ExpressionArg NOTEQUAL ExpressionArg
+              | ExpressionArg LT ExpressionArg
+              | ExpressionArg LTE ExpressionArg
+              | ExpressionArg GT ExpressionArg
+              | ExpressionArg GTE ExpressionArg
+              | AdditiveExprArg
+              ;
+
+AdditiveExprArg : AdditiveExprArg PLUS MultiplicativeExprArg
+                | AdditiveExprArg MINUS MultiplicativeExprArg
+                | MultiplicativeExprArg
+                ;
+
+MultiplicativeExprArg : MultiplicativeExprArg MUL UnaryExprArg
+                      | MultiplicativeExprArg DIV UnaryExprArg
+                      | UnaryExprArg
+                      ;
+
+UnaryExprArg : NOT UnaryExprArg
+          | MINUS UnaryExprArg %prec UMINUS
+          | AMP VariableArg    
+          | DEREFERENCE IDENTIFIER 
+          | DEREFERENCE ExpressionArg 
+          | DEREFERENCE IDENTIFIER LBRACKET INT_LITERAL RBRACKET
+          | BAR ExpressionArg BAR
+          | PrimaryExprArg
+          ;
+
+VariableArg : IDENTIFIER
+         | IDENTIFIER LBRACKET ExpressionArg RBRACKET
+         ;
+
+PrimaryExprArg : IDENTIFIER
+            | INT_LITERAL
+            | LPAREN ExpressionArg RPAREN
+            | IDENTIFIER LBRACKET ExpressionArg RBRACKET 
+            | CHAR_LITERAL 
+            | TRUE 
+            | FALSE 
+            | NULLTOKEN 
+            ;
 
 Type : BOOLEAN
      | CHAR
