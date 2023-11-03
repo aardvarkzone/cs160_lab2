@@ -49,12 +49,8 @@ ProcedureList : Procedure
               | Procedure ProcedureList
               ;
 
-Procedure : PROCEDURE IDENTIFIER LPAREN ParameterList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE
+Procedure : PROCEDURE IDENTIFIER LPAREN ParamList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE
           ;
-
-    
-ParameterList : ParamList
-              ;
 
 ParamList : Param
           | Param SEMICOLON ParamList
@@ -68,11 +64,6 @@ IDList : IDENTIFIER
        | IDENTIFIER COMMA IDList
        ;
 
-
-/* Body : Declarations
-     | Statements
-     | Declarations Statements
-     ; */
 Body : OptionalDeclarations OptionalStatements
      ;
 
@@ -89,10 +80,9 @@ OptionalReturn :
                ;
 
 
-Block : LBRACE OptionalDeclarations OptionalStatements RBRACE ;
+Block : LBRACE OptionalDeclarations OptionalStatements RBRACE 
+      ;
 
-NestedBlock : LBRACE OptionalDeclarations OptionalStatements RBRACE
-            ;
 
 Declarations : Declaration
              | Declaration Declarations
@@ -111,10 +101,6 @@ MultiVarDeclaration : IDList COLON Type
                     | IDList COLON STRING LBRACKET INT_LITERAL RBRACKET
                     ;
 
-/* InitValues : Expression
-           | Expression COMMA InitValues
-           ; */
-
 Statements : Statement
            | Statement Statements
            ;
@@ -126,7 +112,7 @@ Statement : IDENTIFIER EQUAL Expression SEMICOLON
           | IF LPAREN Expression RPAREN Block ELSE Block
           | WHILE LPAREN Expression RPAREN Block
           | LBRACE Statements RBRACE
-          | NestedBlock
+          | Block OptionalStatements
           | Procedure
           ;
 
@@ -169,7 +155,7 @@ PrimaryExpr : IDENTIFIER
             | LPAREN Expression RPAREN
             | IDENTIFIER LPAREN ArgumentList RPAREN 
             | IDENTIFIER LBRACKET Expression RBRACKET 
-            /* | STRING_LITERAL  */
+            | STRING_LITERAL 
             | CHAR_LITERAL 
             | TRUE 
             | FALSE 
@@ -180,8 +166,8 @@ ArgumentList :
              | NonEmptyArgumentList 
              ;
 
-NonEmptyArgumentList : Expression 
-                     | Expression COMMA NonEmptyArgumentList 
+NonEmptyArgumentList : Values 
+                     | Values COMMA NonEmptyArgumentList 
                      ;
 
 Type : BOOLEAN
@@ -190,6 +176,13 @@ Type : BOOLEAN
      | INTPTR
      | CHARPTR
      ;
+
+Values : INT_LITERAL
+       | CHAR_LITERAL
+       | BOOLEAN 
+       | CHARPTR
+       | INTPTR
+       | IDENTIFIER
 
 %%
 
