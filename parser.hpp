@@ -106,37 +106,7 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 29 "parser.ypp"
-
-    std::list<Proc_ptr>* u_proc_list;
-    Program* u_program;
-    std::list<Decl_ptr>* u_decl_list;
-    Proc* u_proc;
-    std::list<Stat_ptr>* u_stat_list;
-    Procedure_block* u_procedure_block;
-    Nested_block* u_nested_block;
-    std::list<SymName_ptr>* u_symname_list;
-    Decl* u_decl;
-    Stat* u_stat;
-    std::list<Expr_ptr>* u_expr_list;
-    Return_stat* u_return_stat;
-    Type* u_type;
-    Expr* u_expr;
-    Lhs* u_lhs;
-    SymName* u_symname;
-    Primitive* u_primitive;
-    StringPrimitive* u_stringprimitive;
-
-    // a couple of hardcoded types
-    char* u_base_charptr;
-    int u_base_int;
-
-#line 137 "parser.hpp"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

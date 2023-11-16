@@ -172,9 +172,9 @@ Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    IDENTIFIER <u_base_charptr> (258) 4 9 10 27 28 33 34 35 36 43 62 64 67 68 69 72 98 100 103 104 105 108
-    INT_LITERAL <u_base_int> (259) 27 30 64 70 100 106
-    CHAR_LITERAL <u_base_int> (260) 73 109
+    IDENTIFIER (258) 4 9 10 27 28 33 34 35 36 43 62 64 67 68 69 72 98 100 103 104 105 108
+    INT_LITERAL (259) 27 30 64 70 100 106
+    CHAR_LITERAL (260) 73 109
     BOOLEAN (261) 113
     CHAR (262) 114
     INTEGER (263) 115
@@ -224,13 +224,13 @@ Nonterminals, with rules where they appear
 
     $accept (49)
         on left: 0
-    Program <u_program> (50)
+    Program (50)
         on left: 1
         on right: 0
-    ProcedureList <u_proc_list> (51)
+    ProcedureList (51)
         on left: 2 3
         on right: 1 3
-    Procedure <u_proc> (52)
+    Procedure (52)
         on left: 4
         on right: 2 3 14 15
     ParamList (53)
@@ -284,25 +284,25 @@ Nonterminals, with rules where they appear
     FunctionCall (69)
         on left: 43
         on right: 42
-    Expression <u_expr> (70)
+    Expression (70)
         on left: 44 45 46 47 48 49 50 51 52
         on right: 21 33 35 36 37 38 39 44 45 46 47 48 49 50 51 63 65 68 71 72
-    AdditiveExpr <u_expr> (71)
+    AdditiveExpr (71)
         on left: 53 54 55
         on right: 52 53 54
-    MultiplicativeExpr <u_expr> (72)
+    MultiplicativeExpr (72)
         on left: 56 57 58
         on right: 53 54 55 56 57
-    UnaryExpr <u_expr> (73)
+    UnaryExpr (73)
         on left: 59 60 61 62 63 64 65 66
         on right: 56 57 58 59 60
-    Variable <u_lhs> (74)
+    Variable (74)
         on left: 67 68
         on right: 61
-    PrimaryExpr <u_expr> (75)
+    PrimaryExpr (75)
         on left: 69 70 71 72 73 74 75 76
         on right: 66
-    ArgumentList <u_expr_list> (76)
+    ArgumentList (76)
         on left: 77 78 79
         on right: 43 79
     ExpressionArg (77)

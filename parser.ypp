@@ -1,30 +1,27 @@
 %{
     #include <cstdio>
     #include <cstdlib>
-
-    #include "ast.hpp"
-    #include "primitive.hpp"
-    #include "symtab.hpp"
-
+    #include <iostream> 
+    using namespace std; 
     #define YYDEBUG 1
 
-    extern Program_ptr ast;
+  
+
+
+
     int yylex(void);
     void yyerror(const char *);
 %}
 
 /* Enables verbose error messages */
 /* %error-verbose */
-%define parse.error verbose
 /** WRITE ME:
  *  - Put all your token definitions here
  *  - Put all your type definitions here
  *  - Put all your precedence/associativity rules here
  */
 
-/* %union {
-    classunion_stype* u_classunion; // Use a pointer to classunion_stype
-} */
+
 
 /* %union {
     std::list<Proc_ptr>* u_proc_list;
