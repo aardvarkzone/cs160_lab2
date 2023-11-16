@@ -70,8 +70,8 @@
 %token BOOLEAN CHAR INTEGER STRING INTPTR CHARPTR 
 %token IF ELSE WHILE VAR PROCEDURE RETURN NULLTOKEN AND 
 %token DIV EQUAL EQUALS GT GTE LT LTE MINUS NOT 
-%token NOTEQUAL OR PLUS MUL AMP DEREFERENCE TRUE FALSE 
-%token COMMA COLON UMINUS
+%token NOTEQUAL OR PLUS MUL AMP DEREFERENCE 
+%token COMMA COLON 
 %token LBRACE RBRACE SEMICOLON LPAREN RPAREN BAR 
 %token LBRACKET RBRACKET STRING_LITERAL 
 
@@ -83,7 +83,6 @@
 %left MUL DIV
 %right NOT
 %precedence DEREFERENCE
-%precedence UMINUS
 
 
 
@@ -92,12 +91,11 @@
 Program : ProcedureList 
         ;
 
-ProcedureList : Procedure 
+ProcedureList :  
               | Procedure ProcedureList 
               ;
 
-
-Procedure : PROCEDURE IDENTIFIER LPAREN ParamList RPAREN RETURN Type LBRACE Body OptionalReturn RBRACE 
+Procedure : PROCEDURE IDENTIFIER LPAREN ParamList RPAREN RETURN Type LBRACE Body RBRACE 
           ;
 
 ParamList : 
@@ -112,68 +110,46 @@ IDList : IDENTIFIER
        | IDENTIFIER COMMA IDList
        ;
 
-Body : OptionalProcedures OptionalDeclarations OptionalStatements
+Body : ProcedureList Declarations Statements Return
      ;
 
-OptionalProcedures :
-                   | NestedProcedures
-                   ;
+Return : RETURN Expression SEMICOLON 
+       ;
 
-NestedProcedures : Procedure
-                 | Procedure NestedProcedures
-                 ;
-OptionalDeclarations : 
-                     | Declarations
-                     ;
+Declarations : 
+            | Declaration Declarations
+            ;
 
-OptionalStatements :
-                   | Statements
-                   ;
+Declaration : VAR IDList COLON Type SEMICOLON
+            | VAR IDList COLON STRING LBRACKET INT_LITERAL RBRACKET SEMICOLON
+            ;
 
-OptionalReturn : 
-               | RETURN Expression SEMICOLON
-               ;
+Statements :
+            | Statement Statements
+            ;
 
-
-Block : LBRACE OptionalDeclarations OptionalStatements RBRACE 
-      ;
-
-
-Declarations : VarDeclaration
-             | VarDeclaration Declarations
-             ;
-
-VarDeclaration : VAR SingleVarDeclaration SEMICOLON
-               | VAR MultiVarDeclaration SEMICOLON
-               ;
-
-SingleVarDeclaration : IDENTIFIER COLON STRING LBRACKET INT_LITERAL RBRACKET
-                     | IDENTIFIER COLON Type 
-                     ;
-
-MultiVarDeclaration : IDList COLON Type 
-                    | IDList COLON STRING LBRACKET INT_LITERAL RBRACKET
-                    ;
-
-Statements : Statement 
-           | Statement Statements
-           ;
-
-Statement : IDENTIFIER EQUAL Expression SEMICOLON
-          | IDENTIFIER EQUAL STRING_LITERAL SEMICOLON
-          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL Expression SEMICOLON 
-          | IDENTIFIER LBRACKET Expression RBRACKET EQUAL STRING_LITERAL SEMICOLON
+Statement : LHS EQUAL Expression SEMICOLON
+          | LHS EQUAL STRING_LITERAL SEMICOLON
+          | LHS EQUAL IDENTIFIER LPAREN ExpressionListOpt RPAREN SEMICOLON //function calls 
           | IF LPAREN Expression RPAREN Block
           | IF LPAREN Expression RPAREN Block ELSE Block
           | WHILE LPAREN Expression RPAREN Block
-          | LBRACE Statements RBRACE
-          | Block OptionalStatements
-          | FunctionCall
+          | Block 
           ;
 
-FunctionCall : IDENTIFIER LPAREN ArgumentList RPAREN SEMICOLON
+LHS : IDENTIFIER
+    | IDENTIFIER LBRACKET Expression RBRACKET
+    | DEREFERENCE IDENTIFIER
 
-Expression : Expression OR Expression 
+ExpressionListOpt : ExpressionList
+                  | 
+
+ExpressionList : Expression COMMA ExpressionList
+               | Expression
+
+Expression : BAR Expression BAR 
+           | AMP LHS 
+           | Expression OR Expression 
            | Expression AND Expression 
            | Expression EQUALS Expression 
            | Expression NOTEQUAL Expression 
@@ -181,93 +157,21 @@ Expression : Expression OR Expression
            | Expression LTE Expression
            | Expression GT Expression 
            | Expression GTE Expression 
-           | AdditiveExpr 
+           | Expression DIV Expression
+           | Expression MUL Expression
+           | Expression PLUS Expression
+           | Expression MINUS Expression
+           | NOT Expression
+           | MINUS Expression
+           | IDENTIFIER
+           | IDENTIFIER LBRACKET Expression RBRACKET
+           | INT_LITERAL
+           | CHAR_LITERAL
+           | BOOLEAN
+           | DEREFERENCE Expression 
+           | NULLTOKEN
+           | 
            ; 
-
-
-AdditiveExpr : AdditiveExpr PLUS MultiplicativeExpr
-             | AdditiveExpr MINUS MultiplicativeExpr
-             | MultiplicativeExpr
-             ;
-
-MultiplicativeExpr : MultiplicativeExpr MUL UnaryExpr
-                   | MultiplicativeExpr DIV UnaryExpr 
-                   | UnaryExpr
-                   ;
-
-UnaryExpr : NOT UnaryExpr
-          | MINUS UnaryExpr %prec UMINUS 
-          | AMP Variable 
-          | DEREFERENCE IDENTIFIER 
-          | DEREFERENCE Expression 
-          | DEREFERENCE IDENTIFIER LBRACKET INT_LITERAL RBRACKET 
-          | BAR Expression BAR 
-          | PrimaryExpr
-          ;
-
-Variable : IDENTIFIER 
-         | IDENTIFIER LBRACKET Expression RBRACKET 
-         ;
-
-PrimaryExpr : IDENTIFIER 
-            | INT_LITERAL 
-            | LPAREN Expression RPAREN
-            | IDENTIFIER LBRACKET Expression RBRACKET 
-            | CHAR_LITERAL 
-            | TRUE 
-            | FALSE 
-            | NULLTOKEN 
-            ;
-
-ArgumentList : 
-             | ExpressionArg 
-             | ExpressionArg COMMA ArgumentList
-             ;
-
-ExpressionArg : ExpressionArg OR ExpressionArg
-              | ExpressionArg AND ExpressionArg
-              | ExpressionArg EQUALS ExpressionArg
-              | ExpressionArg NOTEQUAL ExpressionArg
-              | ExpressionArg LT ExpressionArg
-              | ExpressionArg LTE ExpressionArg
-              | ExpressionArg GT ExpressionArg
-              | ExpressionArg GTE ExpressionArg
-              | AdditiveExprArg
-              ;
-
-AdditiveExprArg : AdditiveExprArg PLUS MultiplicativeExprArg
-                | AdditiveExprArg MINUS MultiplicativeExprArg
-                | MultiplicativeExprArg
-                ;
-
-MultiplicativeExprArg : MultiplicativeExprArg MUL UnaryExprArg
-                      | MultiplicativeExprArg DIV UnaryExprArg
-                      | UnaryExprArg
-                      ;
-
-UnaryExprArg : NOT UnaryExprArg
-          | MINUS UnaryExprArg %prec UMINUS
-          | AMP VariableArg    
-          | DEREFERENCE IDENTIFIER 
-          | DEREFERENCE ExpressionArg 
-          | DEREFERENCE IDENTIFIER LBRACKET INT_LITERAL RBRACKET
-          | BAR ExpressionArg BAR
-          | PrimaryExprArg
-          ;
-
-VariableArg : IDENTIFIER
-         | IDENTIFIER LBRACKET ExpressionArg RBRACKET
-         ;
-
-PrimaryExprArg : IDENTIFIER
-            | INT_LITERAL
-            | LPAREN ExpressionArg RPAREN
-            | IDENTIFIER LBRACKET ExpressionArg RBRACKET 
-            | CHAR_LITERAL 
-            | TRUE 
-            | FALSE 
-            | NULLTOKEN 
-            ;
 
 Type : BOOLEAN
      | CHAR
@@ -275,6 +179,13 @@ Type : BOOLEAN
      | INTPTR
      | CHARPTR
      ;
+
+Block : LBRACE Declarations Statements RBRACE 
+      ;
+
+
+
+
 
 
 
