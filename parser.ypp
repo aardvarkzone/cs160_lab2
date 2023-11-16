@@ -147,20 +147,21 @@ ExpressionListOpt : ExpressionList
 ExpressionList : Expression COMMA ExpressionList
                | Expression
 
-Expression : BAR Expression BAR 
+Expression : LPAREN Expression RPAREN
+           | BAR Expression BAR 
            | AMP LHS 
-           | Expression OR Expression 
            | Expression AND Expression 
+           | Expression DIV Expression 
            | Expression EQUALS Expression 
-           | Expression NOTEQUAL Expression 
-           | Expression LT Expression 
-           | Expression LTE Expression
            | Expression GT Expression 
            | Expression GTE Expression 
-           | Expression DIV Expression
-           | Expression MUL Expression
-           | Expression PLUS Expression
+           | Expression LT Expression 
+           | Expression LTE Expression
            | Expression MINUS Expression
+           | Expression NOTEQUAL Expression 
+           | Expression OR Expression
+           | Expression PLUS Expression
+           | Expression MUL Expression
            | NOT Expression
            | MINUS Expression
            | IDENTIFIER
