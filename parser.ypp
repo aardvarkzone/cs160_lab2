@@ -182,18 +182,6 @@ Type : BOOLEAN
 Block : LBRACE Declarations Statements RBRACE 
       ;
 
-
-
-
-
-
-
-/** %token USELESS */
-
-/* %% */
-/* 
-all : USELESS; */
-
 %%
 
 /** You shall not pass!
@@ -205,5 +193,6 @@ extern int yylineno;
 void yyerror(const char *s)
 {
     fprintf(stderr, "%s at line %d\n", s, yylineno);
-    return;
+    /* return; */
+    exit(1);
 }
