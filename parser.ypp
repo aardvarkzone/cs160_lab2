@@ -170,7 +170,6 @@ Expression : BAR Expression BAR
            | BOOL_LITERAL
            | DEREFERENCE Expression 
            | NULLTOKEN
-           | 
            ; 
 
 Type : BOOLEAN
