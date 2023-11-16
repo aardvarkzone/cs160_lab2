@@ -14,7 +14,7 @@
 %}
 
 /* Enables verbose error messages */
-/* %error-verbose */
+%error-verbose 
 /** WRITE ME:
  *  - Put all your token definitions here
  *  - Put all your type definitions here
