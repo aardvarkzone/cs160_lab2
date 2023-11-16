@@ -1016,12 +1016,12 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 70 "lexer.l"
-{ return TRUE; }
+{ return BOOL_LITERAL; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 71 "lexer.l"
-{ return FALSE; }
+{ return BOOL_LITERAL; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP

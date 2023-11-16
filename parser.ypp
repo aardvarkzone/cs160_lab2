@@ -73,7 +73,7 @@
 %token NOTEQUAL OR PLUS MUL AMP DEREFERENCE 
 %token COMMA COLON 
 %token LBRACE RBRACE SEMICOLON LPAREN RPAREN BAR 
-%token LBRACKET RBRACKET STRING_LITERAL 
+%token LBRACKET RBRACKET STRING_LITERAL BOOL_LITERAL 
 
 %left OR
 %left AND
@@ -167,7 +167,7 @@ Expression : BAR Expression BAR
            | IDENTIFIER LBRACKET Expression RBRACKET
            | INT_LITERAL
            | CHAR_LITERAL
-           | BOOLEAN
+           | BOOL_LITERAL
            | DEREFERENCE Expression 
            | NULLTOKEN
            | 

@@ -86,20 +86,18 @@ extern int yydebug;
     MUL = 287,                     /* MUL  */
     AMP = 288,                     /* AMP  */
     DEREFERENCE = 289,             /* DEREFERENCE  */
-    TRUE = 290,                    /* TRUE  */
-    FALSE = 291,                   /* FALSE  */
-    COMMA = 292,                   /* COMMA  */
-    COLON = 293,                   /* COLON  */
-    UMINUS = 294,                  /* UMINUS  */
-    LBRACE = 295,                  /* LBRACE  */
-    RBRACE = 296,                  /* RBRACE  */
-    SEMICOLON = 297,               /* SEMICOLON  */
-    LPAREN = 298,                  /* LPAREN  */
-    RPAREN = 299,                  /* RPAREN  */
-    BAR = 300,                     /* BAR  */
-    LBRACKET = 301,                /* LBRACKET  */
-    RBRACKET = 302,                /* RBRACKET  */
-    STRING_LITERAL = 303           /* STRING_LITERAL  */
+    COMMA = 290,                   /* COMMA  */
+    COLON = 291,                   /* COLON  */
+    LBRACE = 292,                  /* LBRACE  */
+    RBRACE = 293,                  /* RBRACE  */
+    SEMICOLON = 294,               /* SEMICOLON  */
+    LPAREN = 295,                  /* LPAREN  */
+    RPAREN = 296,                  /* RPAREN  */
+    BAR = 297,                     /* BAR  */
+    LBRACKET = 298,                /* LBRACKET  */
+    RBRACKET = 299,                /* RBRACKET  */
+    STRING_LITERAL = 300,          /* STRING_LITERAL  */
+    BOOL_LITERAL = 301             /* BOOL_LITERAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

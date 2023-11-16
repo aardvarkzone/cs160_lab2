@@ -67,8 +67,8 @@ CHAR_LITERAL     \'[^\']\'
 "*"             { return MUL; }
 "&"             { return AMP; }
 "^"             { return DEREFERENCE; }
-"true"          { return TRUE; }
-"false"         { return FALSE; }
+"true"          { return BOOL_LITERAL; }
+"false"         { return BOOL_LITERAL; }
 "{"             { return LBRACE; }
 "}"             { return RBRACE; }
 ";"             { return SEMICOLON; }
